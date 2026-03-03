@@ -21,12 +21,6 @@ source .venv/bin/activate
 pip install -e .
 ````
 
-### Standard Installation (Coming soon)
-
-```bash
-pip install trajectory-forecast
-```
-
 ### Command-Line (CLI) Usage
 
 Run tracking and forecasting on a video:
@@ -40,7 +34,6 @@ trajectory-forecast \
 
 Configurable arguments
 
-```bash
 ```bash
 trajectory-forecast \
   --model yolo26n.pt \
