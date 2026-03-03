@@ -95,17 +95,8 @@ trajectory_forecast/
 ├── tracker.py       # Track history management
 ├── inference.py     # Core pipeline
 └── cli.py           # Command-line interface
+└── utils.py         # For downloading assets from GitHub.
 ```
-
-
-## Use Cases
-
-* Traffic flow analysis
-* Smart city monitoring
-* Robotics navigation systems
-* Surveillance analytics
-* Edge AI deployments (Jetson, embedded devices)
-* Research prototyping
 
 ## Contributing
 
