@@ -1,0 +1,15 @@
+[project]
+name = "trajectory-forecast"
+version = "0.0.1"
+description = "Forecast the track trajectory to understand it's future position."
+authors = [{ name="Muhammad Rizwan Munawar" }]
+dependencies = [
+    "ultralytics>=8.4.0",
+    "opencv-python",
+    "torch",
+    "numpy",
+    "pyyaml"
+]
+
+[project.scripts]
+trajectory-forecast = "tf.cli:main"
