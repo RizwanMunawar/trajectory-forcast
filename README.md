@@ -27,7 +27,7 @@ pip install -e .
 pip install trajectory-forecast
 ```
 
-## Command-Line (CLI) Usage
+### Command-Line (CLI) Usage
 
 Run tracking and forecasting on a video:
 
@@ -51,7 +51,7 @@ trajectory-forecast \
   --forecast_steps 30 \
 ```
 
-## Python Usage
+### Python Usage
 
 The package can also be used programmatically:
 
@@ -73,7 +73,7 @@ run_inference(
 )
 ```
 
-## Forecasting Methodology
+### Forecasting Methodology
 
 The current forecasting implementation is based on:
 
@@ -84,7 +84,7 @@ The current forecasting implementation is based on:
 
 This approach provides a stable and computationally efficient baseline suitable for real-time systems.
 
-## Project Structure
+### Project Structure
 
 ```
 trajectory_forecast/
@@ -98,6 +98,6 @@ trajectory_forecast/
 └── utils.py         # For downloading assets from GitHub.
 ```
 
-## Contributing
+### Contributing
 
 Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an issue or submit a pull request.
