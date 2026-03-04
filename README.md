@@ -52,18 +52,19 @@ trajectory-forecast \
 ### Python
 
 ```python
-from trajectory_forecast import run_inference
-from trajectory_forecast.config import ForecastConfig
+from tf import run_inference
+from tf.config import ForecastConfig
 
 config = ForecastConfig(
     conf=0.5,
     forecast_steps=50,
     ema_alpha=0.7,
+    classes=[0, 2, 5, 6, 7],
 )
 
 run_inference(
-    model_path="yolo11n.pt",
-    source="video.mp4",
+    model_path="yolo26s.pt",
+    source="https://tinyurl.com/2t2j2vs5",
     output_path="output.mp4",
     config=config,
 )
@@ -83,7 +84,7 @@ This approach provides a stable and computationally efficient baseline suitable 
 ### Project Structure
 
 ```
-trajectory_forecast/
+tf/
 │
 ├── config.py        # Configuration system
 ├── drawing.py       # Visualization utilities
