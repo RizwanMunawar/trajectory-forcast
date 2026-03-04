@@ -100,7 +100,7 @@ def run_inference(
                 tracker_manager.update(tid, cx, cy)
 
                 bbox_color = colors(cls, True)
-                label = f"{tid}"
+                label = f"#{tid}"
 
                 cv2.rectangle(frame, (x1, y1), (x2, y2), bbox_color, 2)  # Draw bbox
 
