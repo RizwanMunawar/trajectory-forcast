@@ -35,7 +35,7 @@ classes: [2, 3, 5]          # classes for object detection
 history: 40                 # store tracking history for number of frames
 min_points: 8               # minimum tracking history to start calculating forecasting
 forecast_steps: 35          # total steps for forecasting, > 40 can cause gitter effect.
-vel_window: 10              # how many previous frames are used to estimate the object's velocity.
+vel_window: 10              # previous frames used to estimate the object's velocity.
 ema_alpha: 0.7              # used to smooth the velocity or trajectory prediction.
 forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
 ```
