@@ -1,15 +1,12 @@
 # Trajectory Forecast
 
-Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object tracking with future motion prediction.
+![Ultralytics 8.4.0](https://img.shields.io/badge/Ultralytics-8.4.0%2B-blue?logo=ultralytics&logoColor=white) ![Python 3.10 | Python3.11 | Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white) ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast)
 
-It combines detection, tracking, motion history modeling, and velocity-based forecasting into a unified pipeline that can be used both as a command-line tool and as a Python library. The system is designed for practical computer vision applications such as traffic analytics, surveillance systems, robotics pipelines, and edge AI deployments.
+Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object 
+tracking with future motion prediction. It combines detection, tracking, motion history modeling, and velocity-based forecasting 
+into a unified pipeline that can be used both as a command-line tool and as a Python library. The system is designed for practical computer vision applications such as traffic analytics, surveillance systems, robotics pipelines, and edge AI deployments.
 
-## Features
-
-- Real-time object detection using Ultralytics YOLO
-- Multi-object tracking (ByteTrack / BoT-SORT compatible)
-- Trajectory history visualization
-- Velocity-based future path forecasting
+https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
 
 ## Installation
 
@@ -19,48 +16,58 @@ It combines detection, tracking, motion history modeling, and velocity-based for
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-````
+```
 
-### Command-Line (CLI) Usage
+### CLI (Command-Line)
 
-Run tracking and forecasting on a video:
+Run tracking and forecasting on a video.
 
 ```bash
 trajectory-forecast \
   --model yolo26n.pt \
-  --source "https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/cars-on-highway.mp4" \
+  --source "https://tinyurl.com/bddswzba" \
   --output result.mp4
 ```
 
-Configurable arguments
+If you want to adjust tracking and forecasting configuration, create a `config.yaml` in directory and paste the mentioned content:
+
+```yaml
+conf: 0.5                   # object detection confidence threshold
+tracker: "bytetrack.yaml"   # tracker selection i.e "botsort.yaml" or "bytetrack.yaml"
+classes: [2, 3, 5]          # classes for object detection
+history: 40                 # store tracking history for number of frames
+min_points: 8               # minimum tracking history to start calculating forecasting
+forecast_steps: 35          # total steps for forecasting, > 40 can cause gitter effect.
+vel_window: 10              # previous frames used to estimate the object's velocity.
+ema_alpha: 0.7              # used to smooth the velocity or trajectory prediction.
+forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
+```
+
+After that, you can use the code using the mentioned command below.
 
 ```bash
 trajectory-forecast \
   --model yolo26n.pt \
-  --source "https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/cars-on-highway.mp4" \
-  --output result.mp4 \
-  --conf 0.5 \
-  --history 30 \
-  --forecast_steps 30 \
+  --source "https://tinyurl.com/bddswzba" \
+  --config "path/to/config.yaml"
 ```
 
-### Python Usage
-
-The package can also be used programmatically:
+### Python
 
 ```python
-from trajectory_forecast import run_inference
-from trajectory_forecast.config import ForecastConfig
+from tf import run_inference
+from tf.config import ForecastConfig
 
 config = ForecastConfig(
     conf=0.5,
     forecast_steps=50,
     ema_alpha=0.7,
+    classes=[0, 2, 5, 6, 7],
 )
 
 run_inference(
-    model_path="yolo11n.pt",
-    source="video.mp4",
+    model_path="yolo26s.pt",
+    source="https://tinyurl.com/2t2j2vs5",
     output_path="output.mp4",
     config=config,
 )
@@ -80,7 +87,7 @@ This approach provides a stable and computationally efficient baseline suitable 
 ### Project Structure
 
 ```
-trajectory_forecast/
+tf/
 │
 ├── config.py        # Configuration system
 ├── drawing.py       # Visualization utilities
@@ -93,4 +100,4 @@ trajectory_forecast/
 
 ### Contributing
 
-Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an issue or submit a pull request.
+Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an [issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a [pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).

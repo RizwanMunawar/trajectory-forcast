@@ -10,11 +10,8 @@ def main():
     parser = argparse.ArgumentParser(description="Trajectory Forecast Package")
 
     parser.add_argument("--model", help="All models supported by Ultralytics Package.")
-    parser.add_argument(
-        "--source", default="https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/cars-on-highway.mp4",
-        required=False)
+    parser.add_argument("--source", default="https://tinyurl.com/bddswzba", required=False)
     parser.add_argument("--output", default="output.mp4")
-
     parser.add_argument("--config", type=str, help="Path to YAML config")
 
     # Optional overrides
@@ -25,7 +22,6 @@ def main():
 
     args = parser.parse_args()
 
-    print(args)
     #Warning if model not provided.
     if not args.model:
         logger.warning("No model selected, using YOLO26s.pt...")

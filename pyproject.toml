@@ -1,8 +1,32 @@
 [project]
 name = "trajectory-forecast"
-version = "0.0.1"
-description = "Forecast the track trajectory to understand it's future position."
+dynamic = ["version"]
 authors = [{ name="Muhammad Rizwan Munawar" }]
+maintainers = [{ name = "Muhammad Rizwan Munawar" }]
+description = "A lightweight Python package for real-time object tracking and trajectory forecasting using Ultralytics YOLO."
+readme = "README.md"
+requires-python = ">=3.9"
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Multimedia :: Video :: Display",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+]
+
 dependencies = [
     "ultralytics>=8.4.0",
     "opencv-python",
@@ -13,3 +37,22 @@ dependencies = [
 
 [project.scripts]
 trajectory-forecast = "tf.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/RizwanMunawar/trajectory-forcast"
+Repository = "https://github.com/RizwanMunawar/trajectory-forcast"
+Issues = "https://github.com/RizwanMunawar/trajectory-forcast/issues"
+Documentation = "https://github.com/RizwanMunawar/trajectory-forcast#readme"
+
+[tool.setuptools.dynamic]
+version = { attr = "tf.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tf*"]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
