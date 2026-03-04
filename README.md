@@ -6,6 +6,7 @@ Trajectory Forecast is a lightweight, modular extension built on top of Ultralyt
 tracking with future motion prediction. It combines detection, tracking, motion history modeling, and velocity-based forecasting 
 into a unified pipeline that can be used both as a command-line tool and as a Python library. The system is designed for practical computer vision applications such as traffic analytics, surveillance systems, robotics pipelines, and edge AI deployments.
 
+https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
 
 ## Installation
 
