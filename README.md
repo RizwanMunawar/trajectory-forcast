@@ -10,15 +10,13 @@ https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
 
 ## Installation
 
-### Recommended (Development Mode)
-
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
+pip install trajectory-forecast
 ```
 
-### CLI (Command-Line)
+## Usage
+
+### CLI
 
 Run tracking and forecasting on a video.
 
@@ -73,7 +71,7 @@ run_inference(
 )
 ```
 
-### Forecasting Methodology
+## Forecasting Methodology
 
 The current forecasting implementation is based on:
 
@@ -84,7 +82,7 @@ The current forecasting implementation is based on:
 
 This approach provides a stable and computationally efficient baseline suitable for real-time systems.
 
-### Project Structure
+## Project Structure
 
 ```
 tf/
@@ -98,6 +96,6 @@ tf/
 └── utils.py         # For downloading assets from GitHub.
 ```
 
-### Contributing
+## Contributing
 
 Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an [issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a [pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).
