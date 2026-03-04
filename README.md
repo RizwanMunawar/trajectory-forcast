@@ -1,15 +1,9 @@
 # Trajectory Forecast
 
-Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object tracking with future motion prediction.
+Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object 
+tracking with future motion prediction. It combines detection, tracking, motion history modeling, and velocity-based forecasting 
+into a unified pipeline that can be used both as a command-line tool and as a Python library. The system is designed for practical computer vision applications such as traffic analytics, surveillance systems, robotics pipelines, and edge AI deployments.
 
-It combines detection, tracking, motion history modeling, and velocity-based forecasting into a unified pipeline that can be used both as a command-line tool and as a Python library. The system is designed for practical computer vision applications such as traffic analytics, surveillance systems, robotics pipelines, and edge AI deployments.
-
-## Features
-
-- Real-time object detection using Ultralytics YOLO
-- Multi-object tracking (ByteTrack / BoT-SORT compatible)
-- Trajectory history visualization
-- Velocity-based future path forecasting
 
 ## Installation
 
@@ -19,34 +13,43 @@ It combines detection, tracking, motion history modeling, and velocity-based for
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .
-````
+```
 
-### Command-Line (CLI) Usage
+### CLI (Command-Line)
 
-Run tracking and forecasting on a video:
+Run tracking and forecasting on a video.
 
 ```bash
 trajectory-forecast \
   --model yolo26n.pt \
-  --source "https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/cars-on-highway.mp4" \
+  --source "https://tinyurl.com/bddswzba" \
   --output result.mp4
 ```
 
-Configurable arguments
+If you want to adjust tracking and forecasting configuration, create a `config.yaml` in directory and paste the mentioned content:
+
+```yaml
+conf: 0.5                   # object detection confidence threshold
+tracker: "bytetrack.yaml"   # tracker selection i.e "botsort.yaml" or "bytetrack.yaml"
+classes: [2, 3, 5]          # classes for object detection
+history: 40                 # store tracking history for number of frames
+min_points: 8               # minimum tracking history to start calculating forecasting
+forecast_steps: 35          # total steps for forecasting, > 40 can cause gitter effect.
+vel_window: 10              # how many previous frames are used to estimate the object's velocity.
+ema_alpha: 0.7              # used to smooth the velocity or trajectory prediction.
+forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
+```
+
+After that, you can use the code using the mentioned command below.
 
 ```bash
 trajectory-forecast \
   --model yolo26n.pt \
-  --source "https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/cars-on-highway.mp4" \
-  --output result.mp4 \
-  --conf 0.5 \
-  --history 30 \
-  --forecast_steps 30 \
+  --source "https://tinyurl.com/bddswzba" \
+  --config "path/to/config.yaml"
 ```
 
-### Python Usage
-
-The package can also be used programmatically:
+### Python
 
 ```python
 from trajectory_forecast import run_inference
