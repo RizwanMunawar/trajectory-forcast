@@ -97,4 +97,4 @@ tf/
 
 ### Contributing
 
-Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an issue or submit a pull request.
+Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an ![issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a ![pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).
