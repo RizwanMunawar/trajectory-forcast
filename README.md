@@ -1,5 +1,7 @@
 # Trajectory Forecast
 
+😍😍😍 **You can use any Ultralytics-supported model here.** 😍😍😍
+
 ![Ultralytics 8.4.0](https://img.shields.io/badge/Ultralytics-8.4.0%2B-blue?logo=ultralytics&logoColor=white) ![Python 3.10 | Python3.11 | Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white) ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast) 
 
 Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object 
@@ -46,7 +48,7 @@ ema_alpha: 0.7              # used to smooth the velocity or trajectory predicti
 forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
 ```
 
-After that, you can use the code using the mentioned command below.
+After that, you can run the code using the command mentioned below.
 
 ```bash
 trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/bddswzba" --config "path/to/config.yaml"
@@ -90,4 +92,4 @@ tf/
 
 ## Contributing
 
-Contributions are welcome. If you would like to extend the forecasting models or improve tracking integration, please open an [issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a [pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).
+The contributions are always welcome. If you would like to extend the forecasting models or improve tracking integration, please open an [issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a [pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).
