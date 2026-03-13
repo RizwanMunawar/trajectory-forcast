@@ -5,7 +5,7 @@
 ![Ultralytics 8.4.0](https://img.shields.io/badge/Ultralytics-8.4.0%2B-blue?logo=ultralytics&logoColor=white) ![Python 3.10 | Python3.11 | Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white) ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast) 
 
 
-<img width="1112" height="584" alt="1772592082361" src="https://github.com/user-attachments/assets/75e3b90f-4e67-44b2-a793-390f94f66018"/><br>
+<img width="1112" height="584" alt="trajectory-forecast-usage-code-snippet" src="https://github.com/user-attachments/assets/75e3b90f-4e67-44b2-a793-390f94f66018"/><br>
 
 Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object 
 tracking with future motion prediction. It combines detection, tracking, motion history modeling, and velocity-based forecasting 
@@ -70,6 +70,7 @@ run_inference(model_path="yolo26s.pt", source="https://tinyurl.com/2t2j2vs5", ou
 
 ## Forecasting methodology
 
+
 The current forecasting implementation is based on:
 
 * Exponential moving average smoothing of object centers
@@ -80,6 +81,9 @@ The current forecasting implementation is based on:
 This approach provides a stable and computationally efficient baseline suitable for real-time systems.
 
 ## Project structure
+
+<img width="1514" height="633" alt="high-level component structure image" src="https://github.com/user-attachments/assets/5f209bc9-9874-45b2-bd4e-1d0e160ffdbb" />
+
 
 ```markdown
 tf/
