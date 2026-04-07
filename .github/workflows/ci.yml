@@ -43,9 +43,12 @@ jobs:
       - name: Lint with flake8
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
-      - name: Run inference
+      - name: Run inference (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          if [[ "$(uname)" == "Linux" ]]; then
-            export QT_QPA_PLATFORM=offscreen
-          fi
+          export QT_QPA_PLATFORM=offscreen
           trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show False --save False
+      
+      - name: Run inference (Windows/Mac)
+        if: matrix.os != 'ubuntu-latest'
+        run: trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show False --save False
