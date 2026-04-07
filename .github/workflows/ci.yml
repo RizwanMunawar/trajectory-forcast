@@ -43,5 +43,9 @@ jobs:
       - name: Lint with flake8
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
-      - name: Inference with tf
-        run: trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show False --save False
+      - name: Run inference
+        run: |
+          if [[ "$(uname)" == "Linux" ]]; then
+            export QT_QPA_PLATFORM=offscreen
+          fi
+          trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show False --save False
