@@ -12,7 +12,7 @@ from .tracker import TrackManager
 
 def run_inference(
     model_path: str = "yolo26n.pt",
-    source: str = "https://tinyurl.com/bddswzba",
+    source: str = "https://tinyurl.com/2f3yrppv",
     output_path: str = "forecast-results.mp4",
     config: ForecastConfig | None = None,
 ):
