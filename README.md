@@ -34,7 +34,7 @@ pip install trajectory-forecast
 Run tracking and forecasting on a video.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/bddswzba" --output result.mp4
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --output result.mp4
 ```
 
 If you want to adjust tracking and forecasting configuration, create a `config.yaml` in the directory and paste the mentioned content:
@@ -54,7 +54,7 @@ forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
 After that, you can run the code using the command mentioned below.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/bddswzba" --config "path/to/config.yaml"
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --config "path/to/config.yaml"
 ```
 
 ### Python
@@ -65,7 +65,7 @@ from tf.config import ForecastConfig
 
 config = ForecastConfig(conf=0.5, forecast_steps=50, ema_alpha=0.7, classes=[0, 2, 5, 6, 7])
 
-run_inference(model_path="yolo26s.pt", source="https://tinyurl.com/2t2j2vs5", output_path="output.mp4", config=config)
+run_inference(model_path="yolo26s.pt", source="https://tinyurl.com/2f3yrppv", output_path="output.mp4", config=config)
 ```
 
 ## Forecasting methodology
