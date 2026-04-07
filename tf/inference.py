@@ -104,7 +104,7 @@ def run_inference(
 
                 cv2.rectangle(frame, (x1, y1), (x2, y2), bbox_color, 2)  # Draw bbox
 
-                (tw, th), _ = cv2.getTextSize(label, 0, config.font_scale, config.font_thickness)
+                tw, th = cv2.getTextSize(label, 0, config.font_scale, config.font_thickness)[0]
 
                 rect_w, rect_h = tw + 2 * config.padding, th + 2 * config.padding
 
