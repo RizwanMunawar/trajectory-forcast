@@ -15,6 +15,8 @@ def run_inference(
     source: str = "https://tinyurl.com/2f3yrppv",
     output_path: str = "forecast-results.mp4",
     config: ForecastConfig | None = None,
+    show: bool = True,
+    save: bool = True,
 ):
     """Run object tracking and trajectory forecasting on a video source. This function performs real-time object detection 
     and tracking using a YOLO model and forecasts future object trajectories based on historical tracking data. The pipeline 
@@ -48,6 +50,12 @@ def run_inference(
             Configuration object containing parameters for detection,
             tracking, trajectory history, velocity estimation, and
             forecasting behavior.
+
+        show (bool):
+            Enable output results display.
+
+        save (bool):
+            Enable output results writing in the video file.
 
     Example:
         >>> from tf.inference import run_inference
@@ -99,29 +107,30 @@ def run_inference(
                 active_ids.add(tid)
                 tracker_manager.update(tid, cx, cy)
 
-                bbox_color = colors(cls, True)
-                label = f"#{tid}"
-
-                cv2.rectangle(frame, (x1, y1), (x2, y2), bbox_color, 2)  # Draw bbox
-
-                tw, th = cv2.getTextSize(label, 0, config.font_scale, config.font_thickness)[0]
-
-                rect_w, rect_h = tw + 2 * config.padding, th + 2 * config.padding
-
-                cv2.rectangle(frame, (x1, y1), (x1 + rect_w, y1 + rect_h), bbox_color, -1)
-
-                text_x, text_y = x1 + (rect_w - tw) // 2, y1 + (rect_h + th) // 2
-
-                cv2.putText(
-                    frame,
-                    label,
-                    (text_x, text_y),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    config.font_scale,
-                    ann.get_txt_color(bbox_color),
-                    config.font_thickness,
-                    cv2.LINE_AA,
-                )
+                if show:
+                    bbox_color = colors(cls, True)
+                    label = f"#{tid}"
+    
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), bbox_color, 2)  # Draw bbox
+    
+                    tw, th = cv2.getTextSize(label, 0, config.font_scale, config.font_thickness)[0]
+    
+                    rect_w, rect_h = tw + 2 * config.padding, th + 2 * config.padding
+    
+                    cv2.rectangle(frame, (x1, y1), (x1 + rect_w, y1 + rect_h), bbox_color, -1)
+    
+                    text_x, text_y = x1 + (rect_w - tw) // 2, y1 + (rect_h + th) // 2
+    
+                    cv2.putText(
+                        frame,
+                        label,
+                        (text_x, text_y),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        config.font_scale,
+                        ann.get_txt_color(bbox_color),
+                        config.font_thickness,
+                        cv2.LINE_AA,
+                    )
 
                 past_pts = clamp_points(list(tracker_manager.history[tid]), width, height)
                 draw_polyline(frame, past_pts, bbox_color)
@@ -132,12 +141,15 @@ def run_inference(
                     if np.hypot(vx, vy) > 1.0:
                         fpts = forecast_points(past_pts[-1], vx, vy, fps, config.forecast_steps)
                         fpts = clamp_points(fpts, width, height)
-                        draw_forecast(frame, fpts, config.forecast_color)
+                        if show:
+                            draw_forecast(frame, fpts, config.forecast_color)
 
         tracker_manager.cleanup(active_ids)
 
-        writer.write(frame)
-        cv2.imshow("Tracking + Forecast", frame)
+        if save:
+            writer.write(frame)
+        if show:
+            cv2.imshow("Tracking + Forecast", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
