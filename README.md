@@ -34,7 +34,7 @@ pip install trajectory-forecast
 Run tracking and forecasting on a video.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --output result.mp4
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --output result.mp4 --show --save
 ```
 
 If you want to adjust tracking and forecasting configuration, create a `config.yaml` in the directory and paste the mentioned content:
