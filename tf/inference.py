@@ -75,11 +75,12 @@ def run_inference(
     cap = cv2.VideoCapture(source)
     if not cap.isOpened():
         raise FileNotFoundError(f"Could not open source: {source}")
-
+    
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
+    if save:
+        writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
     
     tracker_manager = TrackManager(config.history, config.ema_alpha)
 
@@ -149,10 +150,10 @@ def run_inference(
             writer.write(frame)
         if show:
             cv2.imshow("Tracking + Forecast", frame)
-
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
 
     cap.release()
-    writer.release()
+    if save:
+        writer.release()
     cv2.destroyAllWindows()
