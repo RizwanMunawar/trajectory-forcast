@@ -13,6 +13,9 @@ def main():
     parser.add_argument("--source", default="https://tinyurl.com/bddswzba", required=False)
     parser.add_argument("--output", default="output.mp4")
     parser.add_argument("--config", type=str, help="Path to YAML config")
+    parser.add_argument("--show", action="store_true", help="Enable/disable display")
+    parser.add_argument("--save", action="store_true", help="Enable/disable saving")
+    
 
     # Optional overrides
     parser.add_argument("--conf", type=float)
@@ -47,4 +50,6 @@ def main():
         source=args.source,
         output_path=args.output,
         config=config,
+        show=args.show,
+        save=args.save,
     )

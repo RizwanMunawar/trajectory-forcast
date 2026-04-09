@@ -2,7 +2,7 @@
 
 😍😍😍 **You can use any Ultralytics-supported model here.** 😍😍😍
 
-![Ultralytics 8.4.0](https://img.shields.io/badge/Ultralytics-8.4.0%2B-blue?logo=ultralytics&logoColor=white) ![Python 3.10 | Python3.11 | Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white) ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast) 
+[![Trajectory forecast CI](https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml/badge.svg)](https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml) ![Ultralytics 8.4.0](https://img.shields.io/badge/Ultralytics-8.4.0%2B-blue?logo=ultralytics&logoColor=white) ![Python 3.10 | Python3.11 | Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white) ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast) 
 
 
 <img width="1112" height="584" alt="trajectory-forecast-usage-code-snippet" src="https://github.com/user-attachments/assets/75e3b90f-4e67-44b2-a793-390f94f66018"/><br>
@@ -34,7 +34,7 @@ pip install trajectory-forecast
 Run tracking and forecasting on a video.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/bddswzba" --output result.mp4
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --output result.mp4 --show --save
 ```
 
 If you want to adjust tracking and forecasting configuration, create a `config.yaml` in the directory and paste the mentioned content:
@@ -54,7 +54,7 @@ forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
 After that, you can run the code using the command mentioned below.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/bddswzba" --config "path/to/config.yaml"
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --config "path/to/config.yaml"
 ```
 
 ### Python
@@ -65,7 +65,7 @@ from tf.config import ForecastConfig
 
 config = ForecastConfig(conf=0.5, forecast_steps=50, ema_alpha=0.7, classes=[0, 2, 5, 6, 7])
 
-run_inference(model_path="yolo26s.pt", source="https://tinyurl.com/2t2j2vs5", output_path="output.mp4", config=config)
+run_inference(model_path="yolo26s.pt", source="https://tinyurl.com/2f3yrppv", output_path="output.mp4", config=config)
 ```
 
 ## Forecasting methodology

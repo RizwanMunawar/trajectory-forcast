@@ -12,9 +12,11 @@ from .tracker import TrackManager
 
 def run_inference(
     model_path: str = "yolo26n.pt",
-    source: str = "https://tinyurl.com/bddswzba",
+    source: str = "https://tinyurl.com/2f3yrppv",
     output_path: str = "forecast-results.mp4",
     config: ForecastConfig | None = None,
+    show: bool = True,
+    save: bool = True,
 ):
     """Run object tracking and trajectory forecasting on a video source. This function performs real-time object detection 
     and tracking using a YOLO model and forecasts future object trajectories based on historical tracking data. The pipeline 
@@ -49,6 +51,12 @@ def run_inference(
             tracking, trajectory history, velocity estimation, and
             forecasting behavior.
 
+        show (bool):
+            Enable output results display.
+
+        save (bool):
+            Enable output results writing in the video file.
+
     Example:
         >>> from tf.inference import run_inference
         >>> run_inference(
@@ -67,11 +75,12 @@ def run_inference(
     cap = cv2.VideoCapture(source)
     if not cap.isOpened():
         raise FileNotFoundError(f"Could not open source: {source}")
-
+    
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
+    if save:
+        writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
     
     tracker_manager = TrackManager(config.history, config.ema_alpha)
 
@@ -99,49 +108,53 @@ def run_inference(
                 active_ids.add(tid)
                 tracker_manager.update(tid, cx, cy)
 
-                bbox_color = colors(cls, True)
-                label = f"#{tid}"
+                if show:
+                    bbox_color = colors(cls, True)
+                    label = f"#{tid}"
+    
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), bbox_color, 2)  # Draw bbox
+    
+                    tw, th = cv2.getTextSize(label, 0, config.font_scale, config.font_thickness)[0]
+    
+                    rect_w, rect_h = tw + 2 * config.padding, th + 2 * config.padding
+    
+                    cv2.rectangle(frame, (x1, y1), (x1 + rect_w, y1 + rect_h), bbox_color, -1)
+    
+                    text_x, text_y = x1 + (rect_w - tw) // 2, y1 + (rect_h + th) // 2
+    
+                    cv2.putText(
+                        frame,
+                        label,
+                        (text_x, text_y),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        config.font_scale,
+                        ann.get_txt_color(bbox_color),
+                        config.font_thickness,
+                        cv2.LINE_AA,
+                    )
 
-                cv2.rectangle(frame, (x1, y1), (x2, y2), bbox_color, 2)  # Draw bbox
+                    past_pts = clamp_points(list(tracker_manager.history[tid]), width, height)
+                    draw_polyline(frame, past_pts, bbox_color)
 
-                (tw, th), _ = cv2.getTextSize(label, 0, config.font_scale, config.font_thickness)
-
-                rect_w, rect_h = tw + 2 * config.padding, th + 2 * config.padding
-
-                cv2.rectangle(frame, (x1, y1), (x1 + rect_w, y1 + rect_h), bbox_color, -1)
-
-                text_x, text_y = x1 + (rect_w - tw) // 2, y1 + (rect_h + th) // 2
-
-                cv2.putText(
-                    frame,
-                    label,
-                    (text_x, text_y),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    config.font_scale,
-                    ann.get_txt_color(bbox_color),
-                    config.font_thickness,
-                    cv2.LINE_AA,
-                )
-
-                past_pts = clamp_points(list(tracker_manager.history[tid]), width, height)
-                draw_polyline(frame, past_pts, bbox_color)
-
-                if len(past_pts) >= config.min_points:
-                    vx, vy = estimate_velocity(past_pts, fps, config.vel_window)
-
-                    if np.hypot(vx, vy) > 1.0:
-                        fpts = forecast_points(past_pts[-1], vx, vy, fps, config.forecast_steps)
-                        fpts = clamp_points(fpts, width, height)
-                        draw_forecast(frame, fpts, config.forecast_color)
+                    if len(past_pts) >= config.min_points:
+                        vx, vy = estimate_velocity(past_pts, fps, config.vel_window)
+    
+                        if np.hypot(vx, vy) > 1.0:
+                            fpts = forecast_points(past_pts[-1], vx, vy, fps, config.forecast_steps)
+                            fpts = clamp_points(fpts, width, height)
+                            draw_forecast(frame, fpts, config.forecast_color)
 
         tracker_manager.cleanup(active_ids)
 
-        writer.write(frame)
-        cv2.imshow("Tracking + Forecast", frame)
-
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        if save:
+            writer.write(frame)
+        if show:
+            cv2.imshow("Tracking + Forecast", frame)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
 
     cap.release()
-    writer.release()
-    cv2.destroyAllWindows()
+    if save:
+        writer.release()
+    if show:
+        cv2.destroyAllWindows()
