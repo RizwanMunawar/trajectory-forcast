@@ -135,13 +135,12 @@ def run_inference(
                     past_pts = clamp_points(list(tracker_manager.history[tid]), width, height)
                     draw_polyline(frame, past_pts, bbox_color)
 
-                if len(past_pts) >= config.min_points:
-                    vx, vy = estimate_velocity(past_pts, fps, config.vel_window)
-
-                    if np.hypot(vx, vy) > 1.0:
-                        fpts = forecast_points(past_pts[-1], vx, vy, fps, config.forecast_steps)
-                        fpts = clamp_points(fpts, width, height)
-                        if show:
+                    if len(past_pts) >= config.min_points:
+                        vx, vy = estimate_velocity(past_pts, fps, config.vel_window)
+    
+                        if np.hypot(vx, vy) > 1.0:
+                            fpts = forecast_points(past_pts[-1], vx, vy, fps, config.forecast_steps)
+                            fpts = clamp_points(fpts, width, height)
                             draw_forecast(frame, fpts, config.forecast_color)
 
         tracker_manager.cleanup(active_ids)
