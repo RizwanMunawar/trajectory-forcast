@@ -48,8 +48,8 @@ jobs:
         run: |
           pip uninstall -y opencv-python
           pip install opencv-python-headless
-          trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show False --save False
+          trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv"
       
       - name: Run inference (Windows/Mac)
         if: matrix.os != 'ubuntu-latest'
-        run: trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show False --save False
+        run: trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv"
