@@ -13,8 +13,8 @@ def main():
     parser.add_argument("--source", default="https://tinyurl.com/bddswzba", required=False)
     parser.add_argument("--output", default="output.mp4")
     parser.add_argument("--config", type=str, help="Path to YAML config")
-    parser.add_argument("--show", action="store_false", help="Enable/disable display")
-    parser.add_argument("--save", action="store_false", help="Enable/disable saving")
+    parser.add_argument("--show", action="store_true", help="Enable/disable display")
+    parser.add_argument("--save", action="store_true", help="Enable/disable saving")
     
 
     # Optional overrides
