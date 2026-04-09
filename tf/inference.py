@@ -156,4 +156,5 @@ def run_inference(
     cap.release()
     if save:
         writer.release()
-    cv2.destroyAllWindows()
+    if show:
+        cv2.destroyAllWindows()
