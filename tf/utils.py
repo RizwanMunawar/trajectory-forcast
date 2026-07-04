@@ -5,11 +5,17 @@ from pathlib import Path
 
 
 def download_if_url(source: str, cache_dir: str = ".tf_cache") -> str:
-    """
-    If source is a URL, download it locally and return local path.
-    Otherwise return original source.
-    """
+    """Download the source if it is a URL, otherwise return it unchanged.
 
+    Downloads are cached by URL so the same video is not fetched twice.
+
+    Args:
+        source (str): Local path or http(s) URL to the video.
+        cache_dir (str): Folder where downloaded videos are cached.
+
+    Returns:
+        str: A local file path to the video.
+    """
     if not source.startswith(("http://", "https://")):
         return source
 

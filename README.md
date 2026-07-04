@@ -45,7 +45,8 @@ If you want to adjust tracking and forecasting configuration, create a `config.y
 # object detection confidence threshold
 conf: 0.5
 
-# tracker selection, i.e., "botsort.yaml" or "bytetrack.yaml"                
+# tracker selection, i.e., "botsort.yaml" | "bytetrack.yaml"
+# "ocsort.yaml", "deepocsort.yaml", "fasttrack.yaml", "tracktrack.yaml"                
 tracker: "bytetrack.yaml"
 
 # classes for object detection
@@ -57,17 +58,29 @@ history: 40
 # minimum tracking history to start calculating forecasting                 
 min_points: 8
 
-# total steps for forecasting, > 40 can cause gitter effect.             
+# total steps for forecasting; larger values extend the prediction horizon.             
 forecast_steps: 35
 
-# previous frames used to estimate the object's velocity.          
-vel_window: 10
+# minimum speed (px/sec) before a forecast is drawn; filters out standing objects.
+min_speed: 1.0
 
-# used to smooth the velocity or trajectory prediction.              
-ema_alpha: 0.7
+# Kalman motion flexibility; higher reacts faster, lower is smoother.
+process_noise: 1.0
+
+# Kalman detection trust; higher smooths harder (more noise assumed).
+measurement_noise: 10.0
 
 # Forecast point color (B, G, R)           
 forecast_color: [255, 0, 0]
+
+# Drawing sizes below are optional. If left out, they auto-scale to the video
+# resolution. Set any of them to override.
+# line_thickness: 2       # tracking box + trail thickness
+# forecast_thickness: 2   # forecast line thickness
+# forecast_radius: 6      # forecast marker dot radius
+# font_scale: 1.2         # label text size
+# font_thickness: 3       # label text thickness
+# padding: 8              # label box padding
 ```
 
 After that, you can run the code using the command mentioned below.
@@ -87,7 +100,7 @@ from tf.config import ForecastConfig
 config = ForecastConfig(
               conf=0.5,
               forecast_steps=50,
-              ema_alpha=0.7,
+              measurement_noise=10.0,
               classes=[0, 2, 5, 6, 7]
             )
 
@@ -102,14 +115,24 @@ run_inference(
 ## Forecasting methodology
 
 
-The current forecasting implementation is based on:
+Each tracked object is smoothed with a **constant-velocity Kalman filter**:
 
-* Exponential moving average smoothing of object centers
-* Median velocity estimation over a sliding window
-* Linear projection of future positions
-* Stationary gating to prevent unstable predictions
+* The filter keeps a running estimate of position and velocity for every track.
+* On each frame it predicts the next state, then corrects it with the new detection.
+* Future positions are forecast by rolling that motion model forward `forecast_steps` frames.
+* Objects slower than `min_speed` are skipped so standing targets don't get a forecast.
 
-This approach provides a stable and computationally efficient baseline suitable for real-time systems.
+The earlier version estimated velocity by differencing adjacent frames
+(`(p[i] - p[i-1]) / dt`), which divides a tiny per-frame delta by `dt = 1/fps` and so amplifies
+detection noise by a factor of `fps` — the main source of forecast jitter. The Kalman filter
+instead weighs each noisy detection against the predicted motion, so the estimated velocity, and
+therefore the forecast, stays steady. On a straight, constant-velocity track with noisy
+detections this cut the frame-to-frame movement of the forecast endpoint by roughly **30×**.
+
+Two knobs control the smoothing: `measurement_noise` (how much detections are trusted; higher
+smooths harder) and `process_noise` (how quickly the motion is allowed to change; higher reacts
+faster). The filter also keeps predicting through short detection gaps, which helps during brief
+occlusions.
 
 ## Project structure
 
@@ -119,10 +142,10 @@ This approach provides a stable and computationally efficient baseline suitable 
 ```markdown
 tf/
 │
-├── config.py        # Configuration system
+├── config.py        # Configuration and resolution-based auto-scaling
 ├── drawing.py       # Visualization utilities
-├── forecasting.py   # Velocity estimation and projection
-├── tracker.py       # Track history management
+├── forecasting.py   # Kalman filter and forecasting
+├── tracker.py       # Per-track filter and history management
 ├── inference.py     # Core pipeline
 └── cli.py           # Command-line interface
 └── utils.py         # For downloading assets from GitHub.
