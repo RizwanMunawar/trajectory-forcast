@@ -34,27 +34,48 @@ pip install trajectory-forecast
 Run tracking and forecasting on a video.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --output result.mp4 --show --save
+trajectory-forecast --model yolo26n.pt \
+                    --source "https://tinyurl.com/2f3yrppv" \
+                    --output result.mp4 --show --save
 ```
 
 If you want to adjust tracking and forecasting configuration, create a `config.yaml` in the directory and paste the mentioned content:
 
 ```yaml
-conf: 0.5                   # object detection confidence threshold
-tracker: "bytetrack.yaml"   # tracker selection, i.e., "botsort.yaml" or "bytetrack.yaml"
-classes: [2, 3, 5]          # classes for object detection
-history: 40                 # store tracking history for number of frames
-min_points: 8               # minimum tracking history to start calculating forecasting
-forecast_steps: 35          # total steps for forecasting, > 40 can cause gitter effect.
-vel_window: 10              # previous frames used to estimate the object's velocity.
-ema_alpha: 0.7              # used to smooth the velocity or trajectory prediction.
-forecast_color: [255, 0, 0] # Forecast point color (B, G, R)
+# object detection confidence threshold
+conf: 0.5
+
+# tracker selection, i.e., "botsort.yaml" or "bytetrack.yaml"                
+tracker: "bytetrack.yaml"
+
+# classes for object detection
+classes: [2, 3, 5]
+
+# store tracking history for the number of frames        
+history: 40
+
+# minimum tracking history to start calculating forecasting                 
+min_points: 8
+
+# total steps for forecasting, > 40 can cause gitter effect.             
+forecast_steps: 35
+
+# previous frames used to estimate the object's velocity.          
+vel_window: 10
+
+# used to smooth the velocity or trajectory prediction.              
+ema_alpha: 0.7
+
+# Forecast point color (B, G, R)           
+forecast_color: [255, 0, 0]
 ```
 
 After that, you can run the code using the command mentioned below.
 
 ```bash
-trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --config "path/to/config.yaml"
+trajectory-forecast --model yolo26n.pt \
+                    --source "https://tinyurl.com/2f3yrppv" \
+                    --config "path/to/config.yaml"
 ```
 
 ### Python
@@ -63,9 +84,19 @@ trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" -
 from tf import run_inference
 from tf.config import ForecastConfig
 
-config = ForecastConfig(conf=0.5, forecast_steps=50, ema_alpha=0.7, classes=[0, 2, 5, 6, 7])
+config = ForecastConfig(
+              conf=0.5,
+              forecast_steps=50,
+              ema_alpha=0.7,
+              classes=[0, 2, 5, 6, 7]
+            )
 
-run_inference(model_path="yolo26s.pt", source="https://tinyurl.com/2f3yrppv", output_path="output.mp4", config=config)
+run_inference(
+          model_path="yolo26s.pt",
+          source="https://tinyurl.com/2f3yrppv",
+          output_path="output.mp4",
+          config=config
+        )
 ```
 
 ## Forecasting methodology
