@@ -2,8 +2,14 @@
 
 😍😍😍 **You can use any Ultralytics-supported model here.** 😍😍😍
 
-[![Trajectory forecast CI](https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml/badge.svg)](https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml) ![Ultralytics 8.4.0](https://img.shields.io/badge/Ultralytics-8.4.0%2B-blue?logo=ultralytics&logoColor=white) ![Python 3.10 | Python3.11 | Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white) ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast) 
-
+[![CI](https://img.shields.io/github/actions/workflow/status/RizwanMunawar/trajectory-forcast/ci.yml?branch=main&logo=githubactions&logoColor=white)](https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/trajectory-forecast?logo=pypi&logoColor=white)](https://pypi.org/project/trajectory-forecast/)
+[![Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=black&right_color=gray&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast)
+![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?logo=python&logoColor=green)
+![Ultralytics](https://img.shields.io/badge/Ultralytics-8.4.0%2B-00FFFF?logo=ultralytics&logoColor=white)
+![YOLO](https://img.shields.io/badge/YOLO26-Object%20Tracking-FF6F00?logo=yolo&logoColor=white)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast)
+[![Blog](https://img.shields.io/badge/Blog-Trajectory_Forecasting-7B2CBF?logo=readthedocs&logoColor=white)](https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26)
 
 <img width="1112" height="584" alt="trajectory-forecast-usage-code-snippet" src="https://github.com/user-attachments/assets/75e3b90f-4e67-44b2-a793-390f94f66018"/><br>
 
