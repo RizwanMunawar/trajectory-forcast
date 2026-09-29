@@ -62,7 +62,11 @@ def run_inference(
         )
 
     tracker_manager = TrackManager(
-        config.history, fps, config.process_noise, config.measurement_noise
+        config.history,
+        fps,
+        config.process_noise,
+        config.measurement_noise,
+        config.max_gap_frames,
     )
     draw = show or save
 
