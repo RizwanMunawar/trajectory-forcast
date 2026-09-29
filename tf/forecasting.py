@@ -74,9 +74,10 @@ class KalmanTrajectory:
         Returns:
             list[tuple[float, float]]: Predicted (x, y) points.
         """
-        state = self.state.copy()
-        points = []
-        for _ in range(steps):
-            state = self.F @ state
-            points.append((float(state[0]), float(state[1])))
-        return points
+        # With constant velocity and no measurements, F^k has the closed form
+        # (x + k*dt*vx, y + k*dt*vy). Avoid a 4x4 matrix multiply per point.
+        x, y, vx, vy = self.state
+        return [
+            (float(x + k * self.dt * vx), float(y + k * self.dt * vy))
+            for k in range(1, steps + 1)
+        ]
