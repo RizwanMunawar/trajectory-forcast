@@ -64,6 +64,9 @@ history: 40
 # minimum tracking history to start calculating forecasting                 
 min_points: 8
 
+# keep a filter through brief missed detections (0 restores immediate cleanup)
+max_gap_frames: 5
+
 # total steps for forecasting; larger values extend the prediction horizon.             
 forecast_steps: 35
 
@@ -139,6 +142,21 @@ Two knobs control the smoothing: `measurement_noise` (how much detections are tr
 smooths harder) and `process_noise` (how quickly the motion is allowed to change; higher reacts
 faster). The filter also keeps predicting through short detection gaps, which helps during brief
 occlusions.
+
+If a tracked ID disappears for up to `max_gap_frames` frames and returns with
+the same ID, its position history and motion estimate are retained. The filter
+advances once per missing frame before incorporating the new detection. Longer
+gaps release the state to keep memory bounded. This cannot recover an ID that
+the upstream tracker replaces with a new one; tune its own track buffer and
+association settings for that case.
+
+Future points use the constant-velocity formula directly instead of multiplying
+a transition matrix for every step. This changes the cost of drawing a forecast,
+not the YOLO model or the assumptions about motion. On a deterministic synthetic
+20 FPS straight track with two-frame gaps every 25 frames and 1.5-pixel detection
+noise, mean 10-step forecast error fell from 2.96 to 1.09 pixels; uninterrupted
+error remained 1.05 pixels. These are controlled checks, not a claim about
+accuracy on real video or during turns.
 
 ## Project structure
 
