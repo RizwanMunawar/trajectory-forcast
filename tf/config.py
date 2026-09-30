@@ -24,6 +24,7 @@ class ForecastConfig:
     min_speed: float = 1.0
     process_noise: float = 1.0
     measurement_noise: float = 10.0
+    max_gap_frames: int = 5
 
     # Drawing (auto-scaled from resolution when left as None).
     forecast_color: Tuple[int, int, int] = (108, 27, 255)
