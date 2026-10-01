@@ -135,3 +135,23 @@ The motion state is updated online for every tracked object. A white-jerk proces
 
 Brief detection gaps up to `max_gap_frames` retain the same motion state and advance it before the track returns. Longer gaps are released to keep memory bounded. If the upstream tracker assigns a new ID, the forecast starts a new motion state for that ID.
 
+
+## Project structure
+
+<img width="1514" height="633" alt="high-level component structure image" src="https://github.com/user-attachments/assets/5f209bc9-9874-45b2-bd4e-1d0e160ffdbb" />
+
+```markdown
+tf/
+│
+├── config.py        # Configuration and resolution-based auto-scaling
+├── drawing.py       # Visualization utilities
+├── forecasting.py   # Kalman filter and forecasting
+├── tracker.py       # Per-track filter and history management
+├── inference.py     # Core pipeline
+├── cli.py           # Command-line interface
+└── utils.py         # Download helpers
+```
+
+## Contributing
+
+Contributions are always welcome. If you would like to extend the forecasting models or improve tracking integration, please open an issue or submit a pull request.
