@@ -1,5 +1,4 @@
 <h1 align="center">Trajectory Forecast</h1>
-
 <p align="center">
   <a href="https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/RizwanMunawar/trajectory-forcast/ci.yml?branch=main&logo=githubactions&logoColor=white" alt="CI"></a>
   <a href="https://pypi.org/project/trajectory-forecast/"><img src="https://img.shields.io/pypi/v/trajectory-forecast?logo=pypi&logoColor=white" alt="PyPI"></a>
@@ -9,12 +8,15 @@
   <img src="https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast" alt="Visitors">
   <a href="https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26"><img src="https://img.shields.io/badge/Blog-Trajectory_Forecasting-7B2CBF?logo=readthedocs&logoColor=white" alt="Trajectory Forecasting Blog"></a>
 </p>
+<div align="center">
+<img src="https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/trajectory-forecasting-readme.md-cover-page.png" alt="sima-vision: live YOLO computer vision on a SiMa Modalix DevKit 3.0">
+</div>
+
+
 
 Real-time multi-object tracking with lightweight trajectory forecasting, built on top of Ultralytics YOLO.
 
 Track objects in video, keep their motion history, and estimate where they are moving next. Trajectory Forecast can be used from the command line or directly from Python.
-
-https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
 
 ## Installation
 
@@ -40,6 +42,8 @@ trajectory-forecast \
   --show \
   --save
 ```
+
+https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
 
 Any Ultralytics-supported detection model can be used.
 
