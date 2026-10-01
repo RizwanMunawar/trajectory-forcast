@@ -8,16 +8,25 @@ from tf.tracker import TrackManager
 
 
 class ForecastTests(unittest.TestCase):
-    def test_forecast_matches_constant_velocity_transition(self):
-        kf = KalmanTrajectory(10, 20, 1 / 30, 1.0, 10.0)
-        kf.state[:] = [10, 20, -12, 33]
-        future = kf.state.copy()
+    def test_forecast_uses_velocity_and_acceleration(self):
+        kf = KalmanTrajectory(10, 20, 1 / 10, 1.0, 10.0)
+        kf.state[:] = [10, 20, -12, 30, 4, -6]
         expected = []
-        for _ in range(35):
-            future = kf.F @ future
-            expected.append(tuple(future[:2]))
-        np.testing.assert_allclose(kf.forecast(35), expected, rtol=0, atol=1e-12)
+        for step in range(1, 8):
+            t = step / 10
+            expected.append((10 - 12 * t + 2 * t * t, 20 + 30 * t - 3 * t * t))
+        np.testing.assert_allclose(kf.forecast(7), expected, rtol=0, atol=1e-5)
         self.assertEqual(kf.forecast(0), [])
+
+    def test_filter_learns_acceleration_from_motion(self):
+        kf = KalmanTrajectory(0, 0, 0.1, 2.0, 1.0)
+        for frame in range(1, 30):
+            t = frame * 0.1
+            kf.predict()
+            kf.update(20 * t + 3 * t * t, 5 * t)
+        ax, ay = kf.acceleration()
+        self.assertGreater(ax, 1.0)
+        self.assertLess(abs(ay), 1.0)
 
     def test_short_gap_retains_history_and_advances_each_frame(self):
         manager = TrackManager(10, 20, 1.0, 10.0, max_gap_frames=2)

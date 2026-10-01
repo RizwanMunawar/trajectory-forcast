@@ -1,31 +1,19 @@
-# Trajectory Forecast
+<div align="center">
+<img src="https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/trajectory-forecasting-readme.md-cover-page.png" alt="sima-vision: live YOLO computer vision on a SiMa Modalix DevKit 3.0">
+</div>
+<br>
+<p align="center">
+  <a href="https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/RizwanMunawar/trajectory-forcast/ci.yml?branch=main&logo=githubactions&logoColor=white" alt="CI"></a>
+  <a href="https://pypi.org/project/trajectory-forecast/"><img src="https://img.shields.io/pypi/v/trajectory-forecast?logo=pypi&logoColor=white" alt="PyPI"></a>
+  <a href="https://pepy.tech/projects/trajectory-forecast"><img src="https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=black&right_color=gray&left_text=downloads" alt="Downloads"></a>
+  <br>
+  <img src="https://img.shields.io/badge/Python-3.10--3.14-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.14">
+  <img src="https://img.shields.io/badge/Ultralytics-8.4.0%2B-00FFFF?logo=ultralytics&logoColor=white" alt="Ultralytics 8.4.0+">
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast" alt="Visitors">
+  <a href="https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26"><img src="https://img.shields.io/badge/Blog-Trajectory_Forecasting-7B2CBF?logo=readthedocs&logoColor=white" alt="Trajectory Forecasting Blog"></a>
+</p>
 
-😍😍😍 **You can use any Ultralytics-supported model here.** 😍😍😍
-
-[![CI](https://img.shields.io/github/actions/workflow/status/RizwanMunawar/trajectory-forcast/ci.yml?branch=main&logo=githubactions&logoColor=white)](https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/trajectory-forecast?logo=pypi&logoColor=white)](https://pypi.org/project/trajectory-forecast/)
-[![Downloads](https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=black&right_color=gray&left_text=downloads)](https://pepy.tech/projects/trajectory-forecast)
-![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-3776AB?logo=python&logoColor=green)
-![Ultralytics](https://img.shields.io/badge/Ultralytics-8.4.0%2B-00FFFF?logo=ultralytics&logoColor=white)
-![YOLO](https://img.shields.io/badge/YOLO26-Object%20Tracking-FF6F00?logo=yolo&logoColor=white)
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast)
-[![Blog](https://img.shields.io/badge/Blog-Trajectory_Forecasting-7B2CBF?logo=readthedocs&logoColor=white)](https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26)
-
-<img width="1112" height="584" alt="trajectory-forecast-usage-code-snippet" src="https://github.com/user-attachments/assets/75e3b90f-4e67-44b2-a793-390f94f66018"/><br>
-
-Trajectory Forecast is a lightweight, modular extension built on top of Ultralytics YOLO that enables real-time multi-object 
-tracking with future motion prediction. It combines detection, tracking, motion history modeling, and velocity-based forecasting 
-into a unified pipeline that can be used both as a command-line tool and as a Python library. The system is designed for practical computer vision applications such as traffic analytics, surveillance systems, robotics pipelines, and edge AI deployments.
-
-- [Installation](#installation)
-- [Usage](#usage)
-  - [CLI](#cli)
-  - [Python](#python)
-- [Forecasting methodology](#forecasting-methodology)
-- [Project structure](#project-structure)
-- [Contribute](#contributing)
-  
-https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
+Real-time multi-object tracking with lightweight trajectory forecasting, built on top of Ultralytics YOLO. Track objects in video, keep their motion history, and estimate where they are moving next. Trajectory Forecast can be used from the command line or directly from Python.
 
 ## Installation
 
@@ -33,148 +21,105 @@ https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
 pip install trajectory-forecast
 ```
 
-## Usage
+## Quick start
 
-### CLI
-
-Run tracking and forecasting on a video.
+Run tracking and trajectory forecasting on a video:
 
 ```bash
-trajectory-forecast --model yolo26n.pt \
-                    --source "https://tinyurl.com/2f3yrppv" \
-                    --output result.mp4 --show --save
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show
 ```
 
-If you want to adjust tracking and forecasting configuration, create a `config.yaml` in the directory and paste the mentioned content:
-
-```yaml
-# object detection confidence threshold
-conf: 0.5
-
-# tracker selection, i.e., "botsort.yaml" | "bytetrack.yaml"
-# "ocsort.yaml", "deepocsort.yaml", "fasttrack.yaml", "tracktrack.yaml"                
-tracker: "bytetrack.yaml"
-
-# classes for object detection
-classes: [2, 3, 5]
-
-# store tracking history for the number of frames        
-history: 40
-
-# minimum tracking history to start calculating forecasting                 
-min_points: 8
-
-# keep a filter through brief missed detections (0 restores immediate cleanup)
-max_gap_frames: 5
-
-# total steps for forecasting; larger values extend the prediction horizon.             
-forecast_steps: 35
-
-# minimum speed (px/sec) before a forecast is drawn; filters out standing objects.
-min_speed: 1.0
-
-# Kalman motion flexibility; higher reacts faster, lower is smoother.
-process_noise: 1.0
-
-# Kalman detection trust; higher smooths harder (more noise assumed).
-measurement_noise: 10.0
-
-# Forecast point color (B, G, R)           
-forecast_color: [255, 0, 0]
-
-# Drawing sizes below are optional. If left out, they auto-scale to the video
-# resolution. Set any of them to override.
-# line_thickness: 2       # tracking box + trail thickness
-# forecast_thickness: 2   # forecast line thickness
-# forecast_radius: 6      # forecast marker dot radius
-# font_scale: 1.2         # label text size
-# font_thickness: 3       # label text thickness
-# padding: 8              # label box padding
-```
-
-After that, you can run the code using the command mentioned below.
+If you want to save the results
 
 ```bash
-trajectory-forecast --model yolo26n.pt \
-                    --source "https://tinyurl.com/2f3yrppv" \
-                    --config "path/to/config.yaml"
+trajectory-forecast \
+  --model yolo26n.pt \
+  --source "https://tinyurl.com/2f3yrppv" \
+  --output result.mp4 \
+  --show \
+  --save
 ```
+
+https://github.com/user-attachments/assets/9a1267c2-4ba4-49f6-9802-e80fed5e682f
+
+Any Ultralytics-supported detection model can be used.
 
 ### Python
 
 ```python
 from tf import run_inference
-from tf.config import ForecastConfig
-
-config = ForecastConfig(
-              conf=0.5,
-              forecast_steps=50,
-              measurement_noise=10.0,
-              classes=[0, 2, 5, 6, 7]
-            )
 
 run_inference(
-          model_path="yolo26s.pt",
-          source="https://tinyurl.com/2f3yrppv",
-          output_path="output.mp4",
-          config=config
-        )
+    model_path="yolo26n.pt",
+    source="video.mp4",
+    output_path="result.mp4",
+)
 ```
 
-## Forecasting methodology
+## Configuration
 
+The defaults work without a config file. To customize tracking or forecasting, create a YAML file:
 
-Each tracked object is smoothed with a **constant-velocity Kalman filter**:
+```yaml
+conf: 0.5                      # Minimum detection confidence
+tracker: "bytetrack.yaml"      # Tracker used to keep object IDs between frames
+classes: [0, 2, 5, 6, 7]       # Object class IDs to detect and track
 
-* The filter keeps a running estimate of position and velocity for every track.
-* On each frame it predicts the next state, then corrects it with the new detection.
-* Future positions are forecast by rolling that motion model forward `forecast_steps` frames.
-* Objects slower than `min_speed` are skipped so standing targets don't get a forecast.
+history: 30                    # Number of previous positions kept per object
+min_points: 5                  # Positions required before forecasting starts
+forecast_steps: 35             # Number of future frames to predict
+min_speed: 1.0                 # Skip forecasting for nearly stationary objects
+max_gap_frames: 5              # Keep motion state through short detection gaps
 
-The earlier version estimated velocity by differencing adjacent frames
-(`(p[i] - p[i-1]) / dt`), which divides a tiny per-frame delta by `dt = 1/fps` and so amplifies
-detection noise by a factor of `fps` — the main source of forecast jitter. The Kalman filter
-instead weighs each noisy detection against the predicted motion, so the estimated velocity, and
-therefore the forecast, stays steady. On a straight, constant-velocity track with noisy
-detections this cut the frame-to-frame movement of the forecast endpoint by roughly **30×**.
+process_noise: 1.0             # Higher values adapt faster to motion changes
+measurement_noise: 10.0        # Higher values smooth noisy detections more
 
-Two knobs control the smoothing: `measurement_noise` (how much detections are trusted; higher
-smooths harder) and `process_noise` (how quickly the motion is allowed to change; higher reacts
-faster). The filter also keeps predicting through short detection gaps, which helps during brief
-occlusions.
+forecast_color: [255, 0, 0]    # Forecast path color in BGR format
+```
 
-If a tracked ID disappears for up to `max_gap_frames` frames and returns with
-the same ID, its position history and motion estimate are retained. The filter
-advances once per missing frame before incorporating the new detection. Longer
-gaps release the state to keep memory bounded. This cannot recover an ID that
-the upstream tracker replaces with a new one; tune its own track buffer and
-association settings for that case.
+Then pass it to the CLI:
 
-Future points use the constant-velocity formula directly instead of multiplying
-a transition matrix for every step. This changes the cost of drawing a forecast,
-not the YOLO model or the assumptions about motion. On a deterministic synthetic
-20 FPS straight track with two-frame gaps every 25 frames and 1.5-pixel detection
-noise, mean 10-step forecast error fell from 2.96 to 1.09 pixels; uninterrupted
-error remained 1.05 pixels. These are controlled checks, not a claim about
-accuracy on real video or during turns.
+```bash
+trajectory-forecast \
+  --model yolo26n.pt \
+  --source "video.mp4" \
+  --config config.yaml
+```
+
+The most useful forecasting options are:
+
+- `forecast_steps`: how many future frames to predict.
+- `min_points`: tracking history required before forecasting starts.
+- `min_speed`: skips forecasts for nearly stationary objects.
+- `max_gap_frames`: keeps motion state through short detection gaps.
+- `process_noise`: controls how quickly the motion estimate adapts.
+- `measurement_noise`: controls how strongly detection noise is smoothed.
+
+## How forecasting works
+
+Each tracked object has its own acceleration-aware Kalman motion state.
+
+In every frame, the filter updates the object's position, velocity, and acceleration based on the latest tracked position. Future points are then generated from that filtered motion state. This helps the forecast respond to changes in speed rather than assuming that every object will continue at a fixed velocity.
+
+Short detection gaps retain the motion state for up to `max_gap_frames`. If the tracker assigns a completely new ID, a new forecast state is created for that track.
+
+The forecasting layer uses `float32` state arrays and vectorized future-point generation to keep its per-frame overhead small. The terminal also reports trajectory forecasting time separately from the detector's inference timing.
 
 ## Project structure
 
-<img width="1514" height="633" alt="high-level component structure image" src="https://github.com/user-attachments/assets/5f209bc9-9874-45b2-bd4e-1d0e160ffdbb" />
-
-
-```markdown
+```text
 tf/
-│
-├── config.py        # Configuration and resolution-based auto-scaling
-├── drawing.py       # Visualization utilities
-├── forecasting.py   # Kalman filter and forecasting
-├── tracker.py       # Per-track filter and history management
-├── inference.py     # Core pipeline
-└── cli.py           # Command-line interface
-└── utils.py         # For downloading assets from GitHub.
+├── cli.py           # Command-line interface
+├── config.py        # Configuration
+├── drawing.py       # Visualization
+├── forecasting.py   # Motion model and future prediction
+├── inference.py     # Detection, tracking and forecasting pipeline
+├── tracker.py       # Per-track state and history
+└── utils.py         # Utilities
 ```
 
 ## Contributing
 
-The contributions are always welcome. If you would like to extend the forecasting models or improve tracking integration, please open an [issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a [pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).
+Contributions and improvements are welcome. Open an issue or pull request if you find a bug or have an idea for improving tracking or forecasting.
+
+For a practical walkthrough, see the [trajectory forecasting guide](https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26).
