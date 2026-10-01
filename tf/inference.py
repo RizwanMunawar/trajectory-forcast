@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 import torch
@@ -20,8 +22,8 @@ def run_inference(
 ):
     """Track objects in a video and forecast where they will move next.
 
-    Each object is tracked with YOLO, smoothed with a constant-velocity Kalman
-    filter, and its future path is predicted by rolling that filter forward.
+    Each object is tracked with YOLO, smoothed with an acceleration-aware Kalman
+    filter, and its future path is predicted from the filtered motion state.
     Boxes, past tracks and forecasts are drawn on each frame, then shown and/or
     saved to a video.
 
@@ -85,6 +87,7 @@ def run_inference(
 
         active_ids = set()
         ann = Annotator(frame)
+        forecast_time = 0.0
 
         if results.boxes is not None and results.boxes.id is not None:
             boxes = results.boxes.xyxy.cpu().numpy()
@@ -133,9 +136,10 @@ def run_inference(
                 if len(tracker_manager.history[tid]) >= config.min_points:
                     vx, vy = kf.velocity()
                     if np.hypot(vx, vy) > config.min_speed:
-                        fpts = clamp_points(
-                            kf.forecast(config.forecast_steps), width, height
-                        )
+                        forecast_start = time.perf_counter()
+                        future = kf.forecast(config.forecast_steps)
+                        forecast_time += time.perf_counter() - forecast_start
+                        fpts = clamp_points(future, width, height)
                         draw_forecast(
                             frame,
                             fpts,
@@ -145,6 +149,10 @@ def run_inference(
                         )
 
         tracker_manager.cleanup(active_ids)
+
+        # Ultralytics logs preprocess/inference/postprocess timing; report the
+        # forecasting-only cost separately so its per-frame overhead is visible.
+        print(f"Trajectory forecast: {forecast_time * 1000:.2f}ms per frame")
 
         if save:
             writer.write(frame)
