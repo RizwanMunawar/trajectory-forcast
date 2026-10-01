@@ -27,6 +27,12 @@ pip install trajectory-forecast
 Run tracking and trajectory forecasting on a video:
 
 ```bash
+trajectory-forecast --model yolo26n.pt --source "https://tinyurl.com/2f3yrppv" --show
+```
+
+If you want to save the results
+
+```bash
 trajectory-forecast \
   --model yolo26n.pt \
   --source "https://tinyurl.com/2f3yrppv" \
@@ -54,7 +60,7 @@ run_inference(
 The defaults work without a config file. To customize tracking or forecasting, create a YAML file:
 
 ```yaml
-conf: 0.5                    # Minimum detection confidence
+conf: 0.5                      # Minimum detection confidence
 tracker: "bytetrack.yaml"      # Tracker used to keep object IDs between frames
 classes: [0, 2, 5, 6, 7]       # Object class IDs to detect and track
 
@@ -81,18 +87,18 @@ trajectory-forecast \
 
 The most useful forecasting options are:
 
-- `forecast_steps` - how many future frames to predict.
-- `min_points` - tracking history required before forecasting starts.
-- `min_speed` - skips forecasts for nearly stationary objects.
-- `max_gap_frames` - keeps motion state through short detection gaps.
-- `process_noise` - controls how quickly the motion estimate adapts.
-- `measurement_noise` - controls how strongly detection noise is smoothed.
+- `forecast_steps`: how many future frames to predict.
+- `min_points`: tracking history required before forecasting starts.
+- `min_speed`: skips forecasts for nearly stationary objects.
+- `max_gap_frames`: keeps motion state through short detection gaps.
+- `process_noise`: controls how quickly the motion estimate adapts.
+- `measurement_noise`: controls how strongly detection noise is smoothed.
 
 ## How forecasting works
 
 Each tracked object has its own acceleration-aware Kalman motion state.
 
-On every frame, the filter updates the object's position, velocity, and acceleration from the latest tracked position. Future points are then generated from that filtered motion state. This helps the forecast respond to changing speed instead of assuming that every object will continue at one fixed velocity.
+In every frame, the filter updates the object's position, velocity, and acceleration based on the latest tracked position. Future points are then generated from that filtered motion state. This helps the forecast respond to changes in speed rather than assuming that every object will continue at a fixed velocity.
 
 Short detection gaps retain the motion state for up to `max_gap_frames`. If the tracker assigns a completely new ID, a new forecast state is created for that track.
 
