@@ -6,6 +6,8 @@
   <a href="https://pepy.tech/projects/trajectory-forecast"><img src="https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=black&right_color=gray&left_text=downloads" alt="Downloads"></a>
   <img src="https://img.shields.io/badge/Python-3.10--3.14-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.14">
   <img src="https://img.shields.io/badge/Ultralytics-8.4.0%2B-00FFFF?logo=ultralytics&logoColor=white" alt="Ultralytics 8.4.0+">
+  <img src="https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast" alt="Visitors">
+  <a href="https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26"><img src="https://img.shields.io/badge/Blog-Trajectory_Forecasting-7B2CBF?logo=readthedocs&logoColor=white" alt="Trajectory Forecasting Blog"></a>
 </p>
 
 Real-time multi-object tracking with lightweight trajectory forecasting, built on top of Ultralytics YOLO.
