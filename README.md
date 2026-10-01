@@ -124,57 +124,14 @@ run_inference(
 ## Forecasting methodology
 
 
-Each tracked object is smoothed with a **constant-velocity Kalman filter**:
+Each tracked object is smoothed with a **constant-acceleration Kalman filter**:
 
 * The filter keeps a running estimate of position and velocity for every track.
 * On each frame it predicts the next state, then corrects it with the new detection.
-* Future positions are forecast by rolling that motion model forward `forecast_steps` frames.
+* Future positions use the current filtered position, velocity, and acceleration, so the forecast can respond to changing speed instead of assuming fixed velocity.
 * Objects slower than `min_speed` are skipped so standing targets don't get a forecast.
 
-The earlier version estimated velocity by differencing adjacent frames
-(`(p[i] - p[i-1]) / dt`), which divides a tiny per-frame delta by `dt = 1/fps` and so amplifies
-detection noise by a factor of `fps` — the main source of forecast jitter. The Kalman filter
-instead weighs each noisy detection against the predicted motion, so the estimated velocity, and
-therefore the forecast, stays steady. On a straight, constant-velocity track with noisy
-detections this cut the frame-to-frame movement of the forecast endpoint by roughly **30×**.
+The motion state is updated online for every tracked object. A white-jerk process model allows acceleration to change smoothly, while detection measurements continuously correct drift. The implementation uses single-precision state arrays, a small linear solve instead of an explicit matrix inverse, and vectorized future-point generation to keep the forecasting layer inexpensive relative to detector inference.
 
-Two knobs control the smoothing: `measurement_noise` (how much detections are trusted; higher
-smooths harder) and `process_noise` (how quickly the motion is allowed to change; higher reacts
-faster). The filter also keeps predicting through short detection gaps, which helps during brief
-occlusions.
+Brief detection gaps up to `max_gap_frames` retain the same motion state and advance it before the track returns. Longer gaps are released to keep memory bounded. If the upstream tracker assigns a new ID, the forecast starts a new motion state for that ID.
 
-If a tracked ID disappears for up to `max_gap_frames` frames and returns with
-the same ID, its position history and motion estimate are retained. The filter
-advances once per missing frame before incorporating the new detection. Longer
-gaps release the state to keep memory bounded. This cannot recover an ID that
-the upstream tracker replaces with a new one; tune its own track buffer and
-association settings for that case.
-
-Future points use the constant-velocity formula directly instead of multiplying
-a transition matrix for every step. This changes the cost of drawing a forecast,
-not the YOLO model or the assumptions about motion. On a deterministic synthetic
-20 FPS straight track with two-frame gaps every 25 frames and 1.5-pixel detection
-noise, mean 10-step forecast error fell from 2.96 to 1.09 pixels; uninterrupted
-error remained 1.05 pixels. These are controlled checks, not a claim about
-accuracy on real video or during turns.
-
-## Project structure
-
-<img width="1514" height="633" alt="high-level component structure image" src="https://github.com/user-attachments/assets/5f209bc9-9874-45b2-bd4e-1d0e160ffdbb" />
-
-
-```markdown
-tf/
-│
-├── config.py        # Configuration and resolution-based auto-scaling
-├── drawing.py       # Visualization utilities
-├── forecasting.py   # Kalman filter and forecasting
-├── tracker.py       # Per-track filter and history management
-├── inference.py     # Core pipeline
-└── cli.py           # Command-line interface
-└── utils.py         # For downloading assets from GitHub.
-```
-
-## Contributing
-
-The contributions are always welcome. If you would like to extend the forecasting models or improve tracking integration, please open an [issue](https://github.com/RizwanMunawar/trajectory-forcast/issues/new) or submit a [pull request](https://github.com/RizwanMunawar/trajectory-forcast/pulls).
