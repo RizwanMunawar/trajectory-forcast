@@ -1,4 +1,4 @@
-# Trajectory Forecast
+<h1 align="center">Trajectory Forecast</h1>
 
 <p align="center">
   <a href="https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/RizwanMunawar/trajectory-forcast/ci.yml?branch=main&logo=githubactions&logoColor=white" alt="CI"></a>
@@ -54,20 +54,20 @@ run_inference(
 The defaults work without a config file. To customize tracking or forecasting, create a YAML file:
 
 ```yaml
-conf: 0.5
-tracker: "bytetrack.yaml"
-classes: [0, 2, 5, 6, 7]
+conf: 0.5                    # Minimum detection confidence
+tracker: "bytetrack.yaml"      # Tracker used to keep object IDs between frames
+classes: [0, 2, 5, 6, 7]       # Object class IDs to detect and track
 
-history: 30
-min_points: 5
-forecast_steps: 35
-min_speed: 1.0
-max_gap_frames: 5
+history: 30                    # Number of previous positions kept per object
+min_points: 5                  # Positions required before forecasting starts
+forecast_steps: 35             # Number of future frames to predict
+min_speed: 1.0                 # Skip forecasting for nearly stationary objects
+max_gap_frames: 5              # Keep motion state through short detection gaps
 
-process_noise: 1.0
-measurement_noise: 10.0
+process_noise: 1.0             # Higher values adapt faster to motion changes
+measurement_noise: 10.0        # Higher values smooth noisy detections more
 
-forecast_color: [255, 0, 0]
+forecast_color: [255, 0, 0]    # Forecast path color in BGR format
 ```
 
 Then pass it to the CLI:
@@ -81,12 +81,12 @@ trajectory-forecast \
 
 The most useful forecasting options are:
 
-- `forecast_steps` — how many future frames to predict.
-- `min_points` — tracking history required before forecasting starts.
-- `min_speed` — skips forecasts for nearly stationary objects.
-- `max_gap_frames` — keeps motion state through short detection gaps.
-- `process_noise` — controls how quickly the motion estimate adapts.
-- `measurement_noise` — controls how strongly detection noise is smoothed.
+- `forecast_steps` - how many future frames to predict.
+- `min_points` - tracking history required before forecasting starts.
+- `min_speed` - skips forecasts for nearly stationary objects.
+- `max_gap_frames` - keeps motion state through short detection gaps.
+- `process_noise` - controls how quickly the motion estimate adapts.
+- `measurement_noise` - controls how strongly detection noise is smoothed.
 
 ## How forecasting works
 
