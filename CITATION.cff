@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use Trajectory Forecast in your work, please cite this software."
+type: software
+title: "Trajectory Forecast: Real-time Object Tracking and Trajectory Forecasting"
+authors:
+  - family-names: "Munawar"
+    given-names: "Muhammad Rizwan"
+repository-code: "https://github.com/RizwanMunawar/trajectory-forcast"
+url: "https://github.com/RizwanMunawar/trajectory-forcast"
+abstract: >-
+  A lightweight Python package for real-time object tracking and trajectory
+  forecasting using Ultralytics YOLO.
+keywords:
+  - computer vision
+  - object tracking
+  - trajectory forecasting
+  - YOLO
