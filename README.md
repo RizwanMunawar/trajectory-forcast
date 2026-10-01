@@ -1,20 +1,19 @@
 <div align="center">
 <img src="https://github.com/RizwanMunawar/trajectory-forcast/releases/download/0.0.1/trajectory-forecasting-readme.md-cover-page.png" alt="sima-vision: live YOLO computer vision on a SiMa Modalix DevKit 3.0">
 </div>
-
+<br>
 <p align="center">
   <a href="https://github.com/RizwanMunawar/trajectory-forcast/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/RizwanMunawar/trajectory-forcast/ci.yml?branch=main&logo=githubactions&logoColor=white" alt="CI"></a>
   <a href="https://pypi.org/project/trajectory-forecast/"><img src="https://img.shields.io/pypi/v/trajectory-forecast?logo=pypi&logoColor=white" alt="PyPI"></a>
   <a href="https://pepy.tech/projects/trajectory-forecast"><img src="https://static.pepy.tech/personalized-badge/trajectory-forecast?period=total&units=INTERNATIONAL_SYSTEM&left_color=black&right_color=gray&left_text=downloads" alt="Downloads"></a>
+  <br>
   <img src="https://img.shields.io/badge/Python-3.10--3.14-3776AB?logo=python&logoColor=white" alt="Python 3.10-3.14">
   <img src="https://img.shields.io/badge/Ultralytics-8.4.0%2B-00FFFF?logo=ultralytics&logoColor=white" alt="Ultralytics 8.4.0+">
   <img src="https://visitor-badge.laobi.icu/badge?page_id=RizwanMunawar.trajectory-forcast" alt="Visitors">
   <a href="https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26"><img src="https://img.shields.io/badge/Blog-Trajectory_Forecasting-7B2CBF?logo=readthedocs&logoColor=white" alt="Trajectory Forecasting Blog"></a>
 </p>
 
-Real-time multi-object tracking with lightweight trajectory forecasting, built on top of Ultralytics YOLO.
-
-Track objects in video, keep their motion history, and estimate where they are moving next. Trajectory Forecast can be used from the command line or directly from Python.
+Real-time multi-object tracking with lightweight trajectory forecasting, built on top of Ultralytics YOLO. Track objects in video, keep their motion history, and estimate where they are moving next. Trajectory Forecast can be used from the command line or directly from Python.
 
 ## Installation
 
