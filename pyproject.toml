@@ -3,8 +3,9 @@ name = "trajectory-forecast"
 dynamic = ["version"]
 authors = [{ name="Muhammad Rizwan Munawar" }]
 maintainers = [{ name = "Muhammad Rizwan Munawar" }]
-description = "A lightweight Python package for real-time object tracking and trajectory forecasting using Ultralytics YOLO."
+description = "Real-time object tracking and trajectory forecasting with Ultralytics YOLO."
 readme = "README.md"
+keywords = ["trajectory-forecasting", "trajectory-prediction", "object-tracking", "yolo", "computer-vision", "kalman-filter", "motion-prediction", "ultralytics"]
 requires-python = ">=3.9"
 
 classifiers = [
@@ -43,6 +44,7 @@ Homepage = "https://github.com/RizwanMunawar/trajectory-forcast"
 Repository = "https://github.com/RizwanMunawar/trajectory-forcast"
 Issues = "https://github.com/RizwanMunawar/trajectory-forcast/issues"
 Documentation = "https://github.com/RizwanMunawar/trajectory-forcast#readme"
+Guide = "https://www.rizwanai.com/blog/object-tracking-and-trajectory-forecasting-with-yolo26"
 
 [tool.setuptools.dynamic]
 version = { attr = "tf.__version__" }
