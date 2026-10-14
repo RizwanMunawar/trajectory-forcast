@@ -31,7 +31,6 @@ classifiers = [
 dependencies = [
     "ultralytics>=8.4.0",
     "opencv-python",
-    "torch",
     "numpy",
     "pyyaml"
 ]
