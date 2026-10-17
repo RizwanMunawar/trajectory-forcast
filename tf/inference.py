@@ -7,6 +7,7 @@ from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator, colors
 
 from .config import ForecastConfig
+from .diagnostics import ForecastDiagnostics
 from .drawing import clamp_points, draw_forecast, draw_polyline
 from .tracker import TrackManager
 from .utils import download_if_url
@@ -19,6 +20,7 @@ def run_inference(
     config: ForecastConfig | None = None,
     show: bool = True,
     save: bool = True,
+    profile: bool = False,
 ):
     """Track objects in a video and forecast where they will move next.
 
@@ -34,6 +36,7 @@ def run_inference(
         config (ForecastConfig | None): Settings; defaults are used if None.
         show (bool): Display frames in a window.
         save (bool): Write annotated frames to ``output_path``.
+        profile (bool): Print aggregate forecasting and track-ID diagnostics.
 
     Example:
         >>> from tf.inference import run_inference
@@ -71,6 +74,7 @@ def run_inference(
         config.max_gap_frames,
     )
     draw = show or save
+    diagnostics = ForecastDiagnostics() if profile else None
 
     while True:
         ret, frame = cap.read()
@@ -88,6 +92,7 @@ def run_inference(
         active_ids = set()
         ann = Annotator(frame)
         forecast_time = 0.0
+        forecast_calls = 0
 
         if results.boxes is not None and results.boxes.id is not None:
             boxes = results.boxes.xyxy.cpu().numpy()
@@ -139,6 +144,7 @@ def run_inference(
                         forecast_start = time.perf_counter()
                         future = kf.forecast(config.forecast_steps)
                         forecast_time += time.perf_counter() - forecast_start
+                        forecast_calls += 1
                         fpts = clamp_points(future, width, height)
                         draw_forecast(
                             frame,
@@ -149,6 +155,8 @@ def run_inference(
                         )
 
         tracker_manager.cleanup(active_ids)
+        if diagnostics is not None:
+            diagnostics.record(active_ids, forecast_time, forecast_calls)
 
         # Ultralytics logs preprocess/inference/postprocess timing; report the
         # forecasting-only cost separately so its per-frame overhead is visible.
@@ -160,6 +168,9 @@ def run_inference(
             cv2.imshow("Tracking + Forecast", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
+
+    if diagnostics is not None:
+        print(diagnostics.summary())
 
     cap.release()
     if save:
