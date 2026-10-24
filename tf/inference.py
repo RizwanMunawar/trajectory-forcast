@@ -100,8 +100,11 @@ def run_inference(
             clss = results.boxes.cls.cpu().numpy().astype(int)
 
             for bbox, tid, cls in zip(boxes, ids, clss):
+                # Preserve subpixel detector coordinates for motion estimation.
+                # Integer conversion is only needed for drawing the bounding box.
+                x1f, y1f, x2f, y2f = bbox
+                cx, cy = (x1f + x2f) / 2.0, (y1f + y2f) / 2.0
                 x1, y1, x2, y2 = map(int, bbox)
-                cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
 
                 active_ids.add(tid)
                 kf = tracker_manager.update(tid, cx, cy)
