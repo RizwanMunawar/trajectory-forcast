@@ -2,7 +2,6 @@ import time
 
 import cv2
 import numpy as np
-import torch
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator, colors
 
@@ -45,9 +44,6 @@ def run_inference(
     config = config or ForecastConfig()
 
     model = YOLO(model_path)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
-
     source = download_if_url(source)  # Download first if the source is a URL.
 
     cap = cv2.VideoCapture(source)
@@ -90,7 +86,7 @@ def run_inference(
         )[0]
 
         active_ids = set()
-        ann = Annotator(frame)
+        ann = Annotator(frame) if draw else None
         forecast_time = 0.0
         forecast_calls = 0
 
