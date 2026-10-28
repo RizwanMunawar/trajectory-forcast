@@ -19,7 +19,11 @@ def main():
     parser.add_argument("--config", type=str, help="Path to YAML config.")
     parser.add_argument("--show", action="store_true", help="Display the results.")
     parser.add_argument("--save", action="store_true", help="Save the results.")
-    parser.add_argument("--profile", action="store_true", help="Summarize forecast timing and track-ID lifecycle.")
+    parser.add_argument(
+        "--profile",
+        action="store_true",
+        help="Summarize forecast timing and track-ID lifecycle.",
+    )
 
     # Optional overrides that take priority over the YAML config.
     parser.add_argument("--conf", type=float)
@@ -27,9 +31,19 @@ def main():
     parser.add_argument("--forecast_steps", type=int)
     parser.add_argument("--process_noise", type=float)
     parser.add_argument("--measurement_noise", type=float)
-    parser.add_argument("--imgsz", type=int, help="Inference image size; smaller sizes can improve speed but may reduce accuracy.")
-    parser.add_argument("--half", action="store_true", help="Use half precision where supported.")
-    parser.add_argument("--device", type=str, help="Inference device, e.g. cpu, 0, or mps. Default: automatic selection.")
+    parser.add_argument(
+        "--imgsz",
+        type=int,
+        help="Inference image size; smaller sizes can improve speed but may reduce accuracy.",
+    )
+    parser.add_argument(
+        "--half", action="store_true", help="Use half precision where supported."
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        help="Inference device, e.g. cpu, 0, or mps. Default: automatic selection.",
+    )
 
     args = parser.parse_args()
 
