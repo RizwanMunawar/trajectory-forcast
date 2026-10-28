@@ -27,6 +27,9 @@ def main():
     parser.add_argument("--forecast_steps", type=int)
     parser.add_argument("--process_noise", type=float)
     parser.add_argument("--measurement_noise", type=float)
+    parser.add_argument("--imgsz", type=int, help="Inference image size; smaller sizes can improve speed but may reduce accuracy.")
+    parser.add_argument("--half", action="store_true", help="Use half precision where supported.")
+    parser.add_argument("--device", type=str, help="Inference device, e.g. cpu, 0, or mps. Default: automatic selection.")
 
     args = parser.parse_args()
 
@@ -48,6 +51,14 @@ def main():
         config.process_noise = args.process_noise
     if args.measurement_noise is not None:
         config.measurement_noise = args.measurement_noise
+    if args.imgsz is not None:
+        if args.imgsz <= 0:
+            parser.error("--imgsz must be a positive integer")
+        config.imgsz = args.imgsz
+    if args.half:
+        config.half = True
+    if args.device is not None:
+        config.device = args.device
 
     run_inference(
         model_path=model,
