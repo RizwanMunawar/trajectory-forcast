@@ -71,7 +71,7 @@ def run_inference(
     )
     draw = show or save
     diagnostics = ForecastDiagnostics() if profile else None
-    stage_seconds = {name: 0.0 for name in ("decode", "inference_tracking", "forecast_drawing", "write", "display", "total")}
+    stage_seconds = {name: 0.0 for name in ("decode", "inference_tracking", "postprocess_forecast_drawing", "write", "display", "total")}
     track_kwargs = {
         "persist": True,
         "conf": config.conf,
@@ -86,17 +86,19 @@ def run_inference(
         track_kwargs["device"] = config.device
 
     while True:
-        frame_started = time.perf_counter()
-        stage_started = time.perf_counter()
+        frame_started = time.perf_counter() if profile else 0.0
+        stage_started = time.perf_counter() if profile else 0.0
         ret, frame = cap.read()
-        stage_seconds["decode"] += time.perf_counter() - stage_started
+        if profile:
+            stage_seconds["decode"] += time.perf_counter() - stage_started
         if not ret:
             break
 
-        stage_started = time.perf_counter()
+        stage_started = time.perf_counter() if profile else 0.0
         results = model.track(frame, **track_kwargs)[0]
-        stage_seconds["inference_tracking"] += time.perf_counter() - stage_started
-        processing_started = time.perf_counter()
+        if profile:
+            stage_seconds["inference_tracking"] += time.perf_counter() - stage_started
+        processing_started = time.perf_counter() if profile else 0.0
 
         active_ids = set()
         ann = Annotator(frame) if draw else None
@@ -167,7 +169,8 @@ def run_inference(
                         )
 
         tracker_manager.cleanup(active_ids)
-        stage_seconds["forecast_drawing"] += time.perf_counter() - processing_started
+        if profile:
+            stage_seconds["postprocess_forecast_drawing"] += time.perf_counter() - processing_started
         if diagnostics is not None:
             diagnostics.record(active_ids, forecast_time, forecast_calls)
 
@@ -177,17 +180,20 @@ def run_inference(
             print(f"Trajectory forecast: {forecast_time * 1000:.2f}ms per frame")
 
         if save:
-            stage_started = time.perf_counter()
+            stage_started = time.perf_counter() if profile else 0.0
             writer.write(frame)
-            stage_seconds["write"] += time.perf_counter() - stage_started
+            if profile:
+                stage_seconds["write"] += time.perf_counter() - stage_started
         if show:
-            stage_started = time.perf_counter()
+            stage_started = time.perf_counter() if profile else 0.0
             cv2.imshow("Tracking + Forecast", frame)
             should_quit = cv2.waitKey(1) & 0xFF == ord("q")
-            stage_seconds["display"] += time.perf_counter() - stage_started
+            if profile:
+                stage_seconds["display"] += time.perf_counter() - stage_started
         else:
             should_quit = False
-        stage_seconds["total"] += time.perf_counter() - frame_started
+        if profile:
+            stage_seconds["total"] += time.perf_counter() - frame_started
         if should_quit:
             break
 
