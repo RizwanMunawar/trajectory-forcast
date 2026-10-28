@@ -157,9 +157,10 @@ def run_inference(
         if diagnostics is not None:
             diagnostics.record(active_ids, forecast_time, forecast_calls)
 
-        # Ultralytics logs preprocess/inference/postprocess timing; report the
-        # forecasting-only cost separately so its per-frame overhead is visible.
-        print(f"Trajectory forecast: {forecast_time * 1000:.2f}ms per frame")
+        # Per-frame stdout can become a bottleneck on long/high-FPS videos.
+        # Keep detailed timing output opt-in with profiling enabled.
+        if diagnostics is not None:
+            print(f"Trajectory forecast: {forecast_time * 1000:.2f}ms per frame")
 
         if save:
             writer.write(frame)
