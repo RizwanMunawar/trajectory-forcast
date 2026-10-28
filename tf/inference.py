@@ -71,19 +71,32 @@ def run_inference(
     )
     draw = show or save
     diagnostics = ForecastDiagnostics() if profile else None
+    stage_seconds = {name: 0.0 for name in ("decode", "inference_tracking", "forecast_drawing", "write", "display", "total")}
+    track_kwargs = {
+        "persist": True,
+        "conf": config.conf,
+        "classes": config.classes,
+        "tracker": config.tracker,
+    }
+    if config.imgsz is not None:
+        track_kwargs["imgsz"] = config.imgsz
+    if config.half:
+        track_kwargs["half"] = True
+    if config.device is not None:
+        track_kwargs["device"] = config.device
 
     while True:
+        frame_started = time.perf_counter()
+        stage_started = time.perf_counter()
         ret, frame = cap.read()
+        stage_seconds["decode"] += time.perf_counter() - stage_started
         if not ret:
             break
 
-        results = model.track(
-            frame,
-            persist=True,
-            conf=config.conf,
-            classes=config.classes,
-            tracker=config.tracker,
-        )[0]
+        stage_started = time.perf_counter()
+        results = model.track(frame, **track_kwargs)[0]
+        stage_seconds["inference_tracking"] += time.perf_counter() - stage_started
+        processing_started = time.perf_counter()
 
         active_ids = set()
         ann = Annotator(frame) if draw else None
@@ -154,6 +167,7 @@ def run_inference(
                         )
 
         tracker_manager.cleanup(active_ids)
+        stage_seconds["forecast_drawing"] += time.perf_counter() - processing_started
         if diagnostics is not None:
             diagnostics.record(active_ids, forecast_time, forecast_calls)
 
@@ -163,14 +177,27 @@ def run_inference(
             print(f"Trajectory forecast: {forecast_time * 1000:.2f}ms per frame")
 
         if save:
+            stage_started = time.perf_counter()
             writer.write(frame)
+            stage_seconds["write"] += time.perf_counter() - stage_started
         if show:
+            stage_started = time.perf_counter()
             cv2.imshow("Tracking + Forecast", frame)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
+            should_quit = cv2.waitKey(1) & 0xFF == ord("q")
+            stage_seconds["display"] += time.perf_counter() - stage_started
+        else:
+            should_quit = False
+        stage_seconds["total"] += time.perf_counter() - frame_started
+        if should_quit:
+            break
 
     if diagnostics is not None:
         print(diagnostics.summary())
+        frames = max(diagnostics.frames, 1)
+        print("Pipeline profiling (average ms/frame): " + ", ".join(
+            f"{name}={1000.0 * seconds / frames:.2f}"
+            for name, seconds in stage_seconds.items()
+        ))
 
     cap.release()
     if save:
