@@ -71,7 +71,17 @@ def run_inference(
     )
     draw = show or save
     diagnostics = ForecastDiagnostics() if profile else None
-    stage_seconds = {name: 0.0 for name in ("decode", "inference_tracking", "postprocess_forecast_drawing", "write", "display", "total")}
+    stage_seconds = {
+        name: 0.0
+        for name in (
+            "decode",
+            "inference_tracking",
+            "postprocess_forecast_drawing",
+            "write",
+            "display",
+            "total",
+        )
+    }
     track_kwargs = {
         "persist": True,
         "conf": config.conf,
@@ -155,10 +165,11 @@ def run_inference(
                 if len(tracker_manager.history[tid]) >= config.min_points:
                     vx, vy = kf.velocity()
                     if np.hypot(vx, vy) > config.min_speed:
-                        forecast_start = time.perf_counter()
+                        forecast_start = time.perf_counter() if profile else 0.0
                         future = kf.forecast(config.forecast_steps)
-                        forecast_time += time.perf_counter() - forecast_start
-                        forecast_calls += 1
+                        if profile:
+                            forecast_time += time.perf_counter() - forecast_start
+                            forecast_calls += 1
                         fpts = clamp_points(future, width, height)
                         draw_forecast(
                             frame,
@@ -170,7 +181,9 @@ def run_inference(
 
         tracker_manager.cleanup(active_ids)
         if profile:
-            stage_seconds["postprocess_forecast_drawing"] += time.perf_counter() - processing_started
+            stage_seconds["postprocess_forecast_drawing"] += (
+                time.perf_counter() - processing_started
+            )
         if diagnostics is not None:
             diagnostics.record(active_ids, forecast_time, forecast_calls)
 
@@ -200,10 +213,13 @@ def run_inference(
     if diagnostics is not None:
         print(diagnostics.summary())
         frames = max(diagnostics.frames, 1)
-        print("Pipeline profiling (average ms/frame): " + ", ".join(
-            f"{name}={1000.0 * seconds / frames:.2f}"
-            for name, seconds in stage_seconds.items()
-        ))
+        print(
+            "Pipeline profiling (average ms/frame): "
+            + ", ".join(
+                f"{name}={1000.0 * seconds / frames:.2f}"
+                for name, seconds in stage_seconds.items()
+            )
+        )
 
     cap.release()
     if save:
