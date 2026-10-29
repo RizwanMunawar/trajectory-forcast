@@ -16,6 +16,9 @@ class ForecastConfig:
     conf: float = 0.4
     tracker: str = "bytetrack.yaml"
     classes: Optional[List[int]] = None
+    imgsz: Optional[int] = None
+    half: bool = False
+    device: Optional[str] = None
 
     # Trajectory and forecasting.
     history: int = 30

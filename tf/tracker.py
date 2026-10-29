@@ -63,10 +63,16 @@ class TrackManager:
         Args:
             active_ids (set[int]): Track ids seen in the current frame.
         """
-        for tid in list(self.filters):
+        expired = []
+        for tid in self.filters:
             if tid not in active_ids:
                 self.missed[tid] += 1
                 if self.missed[tid] > self.max_gap_frames:
-                    self.history.pop(tid, None)
-                    self.filters.pop(tid, None)
-                    self.missed.pop(tid, None)
+                    expired.append(tid)
+
+        # Avoid copying every active track ID on every frame. Only retain a
+        # temporary list for tracks that actually expire.
+        for tid in expired:
+            self.history.pop(tid, None)
+            self.filters.pop(tid, None)
+            self.missed.pop(tid, None)

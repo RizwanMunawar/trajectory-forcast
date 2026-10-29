@@ -61,6 +61,9 @@ Any Ultralytics-supported detection model can be used.
 | `--config` | Optional YAML configuration file |
 | `--show` | Display the processed video |
 | `--save` | Save the processed result |
+| `--imgsz` | Override inference image size; smaller values may improve speed but reduce accuracy |
+| `--half` | Request half-precision inference where supported |
+| `--device` | Select inference device, e.g. `cpu`, `0`, or `mps`; default is automatic |
 
 ### Python
 
@@ -91,6 +94,11 @@ max_gap_frames: 5              # Keep motion state through short detection gaps
 
 process_noise: 1.0             # Higher values adapt faster to motion changes
 measurement_noise: 10.0        # Higher values smooth noisy detections more
+
+# Optional inference performance controls (defaults preserve Ultralytics behavior)
+imgsz: 640                      # Inference image size; lower may be faster but less accurate
+half: false                     # Enable half precision where supported
+# device: "0"                   # Optional: "cpu", "0", or "mps"; omitted = auto
 
 forecast_color: [255, 0, 0]    # Forecast path color in BGR format
 ```
@@ -123,7 +131,9 @@ In every frame, the filter updates the object's position, velocity, and accelera
 
 Short detection gaps retain the motion state for up to `max_gap_frames`. If the tracker assigns a completely new ID, a new forecast state is created for that track.
 
-The forecasting layer uses `float32` state arrays and vectorized future-point generation to keep its per-frame overhead small. The terminal also reports trajectory forecasting time separately from the detector's inference timing.
+The forecasting layer uses `float32` state arrays and vectorized future-point generation to keep its per-frame overhead small. Use `--profile` to report average per-frame time for video decoding, YOLO inference/tracking, forecasting and drawing, output writing, display, and total processing. Profiling is intended for measurement and adds a small amount of timing overhead.
+
+For fair comparisons, use the same video, model, device, tracker, output options, and warm-up conditions. Compare multiple runs and report median FPS alongside detection/forecast quality. Lowering `imgsz` or enabling `half` may improve throughput on supported hardware but can change detection results. The package does not claim a fixed speedup because performance depends on hardware and workload.
 
 ## Project structure
 

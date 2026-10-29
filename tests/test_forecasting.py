@@ -3,11 +3,23 @@ import unittest
 
 import numpy as np
 
+from tf.config import ForecastConfig
 from tf.forecasting import KalmanTrajectory
 from tf.tracker import TrackManager
 
 
 class ForecastTests(unittest.TestCase):
+    def test_inference_performance_options_preserve_defaults(self):
+        config = ForecastConfig()
+        self.assertIsNone(config.imgsz)
+        self.assertFalse(config.half)
+        self.assertIsNone(config.device)
+
+        tuned = ForecastConfig(imgsz=480, half=True, device="0")
+        self.assertEqual(tuned.imgsz, 480)
+        self.assertTrue(tuned.half)
+        self.assertEqual(tuned.device, "0")
+
     def test_forecast_uses_velocity_and_acceleration(self):
         kf = KalmanTrajectory(10, 20, 1 / 10, 1.0, 10.0)
         kf.state[:] = [10, 20, -12, 30, 4, -6]
