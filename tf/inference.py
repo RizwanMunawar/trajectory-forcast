@@ -84,6 +84,7 @@ def run_inference(
     }
     track_kwargs = {
         "persist": True,
+        "verbose": False,
         "conf": config.conf,
         "classes": config.classes,
         "tracker": config.tracker,
@@ -116,9 +117,13 @@ def run_inference(
         forecast_calls = 0
 
         if results.boxes is not None and results.boxes.id is not None:
-            boxes = results.boxes.xyxy.cpu().numpy()
-            ids = results.boxes.id.cpu().numpy().astype(int)
-            clss = results.boxes.cls.cpu().numpy().astype(int)
+            # Boxes.data already contains xyxy, track ID, confidence and class.
+            # Transfer it once instead of synchronizing the device separately
+            # for xyxy, id and cls (three GPU->CPU copies per frame).
+            tracked = results.boxes.data.detach().cpu().numpy()
+            boxes = tracked[:, :4]
+            ids = tracked[:, 4].astype(np.int64, copy=False)
+            clss = tracked[:, 6].astype(np.int64, copy=False)
 
             for bbox, tid, cls in zip(boxes, ids, clss):
                 # Preserve subpixel detector coordinates for motion estimation.
@@ -186,11 +191,6 @@ def run_inference(
             )
         if diagnostics is not None:
             diagnostics.record(active_ids, forecast_time, forecast_calls)
-
-        # Per-frame stdout can become a bottleneck on long/high-FPS videos.
-        # Keep detailed timing output opt-in with profiling enabled.
-        if diagnostics is not None:
-            print(f"Trajectory forecast: {forecast_time * 1000:.2f}ms per frame")
 
         if save:
             stage_started = time.perf_counter() if profile else 0.0
