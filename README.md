@@ -131,7 +131,7 @@ In every frame, the filter updates the object's position, velocity, and accelera
 
 Short detection gaps retain the motion state for up to `max_gap_frames`. If the tracker assigns a completely new ID, a new forecast state is created for that track.
 
-The forecasting layer uses `float32` state arrays and vectorized future-point generation to keep its per-frame overhead small. Use `--profile` to report average per-frame time for video decoding, YOLO inference/tracking, forecasting and drawing, output writing, display, and total processing. Profiling is intended for measurement and adds a small amount of timing overhead.
+The forecasting layer uses `float32` state arrays and vectorized future-point generation. The inference loop also transfers the tracked box coordinates, IDs and classes to CPU in one batch per frame, avoiding multiple GPU synchronization points, and disables verbose per-frame Ultralytics output. Use `--profile` to report average per-frame time for video decoding, YOLO inference/tracking, forecasting and drawing, output writing, display, and total processing. Profiling is intended for measurement and adds a small amount of timing overhead.
 
 For fair comparisons, use the same video, model, device, tracker, output options, and warm-up conditions. Compare multiple runs and report median FPS alongside detection/forecast quality. Lowering `imgsz` or enabling `half` may improve throughput on supported hardware but can change detection results. The package does not claim a fixed speedup because performance depends on hardware and workload.
 
