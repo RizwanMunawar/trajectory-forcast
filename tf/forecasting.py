@@ -4,8 +4,23 @@ import numpy as np
 class KalmanTrajectory:
     """Constant-acceleration Kalman filter for one tracked object."""
 
-    def __init__(self, x, y, dt, process_noise, measurement_noise):
+    def __init__(
+        self,
+        x,
+        y,
+        dt,
+        process_noise,
+        measurement_noise,
+        confidence_floor=0.1,
+        confidence_exponent=1.0,
+    ):
         self.dt = float(dt)
+        self.confidence_floor = float(confidence_floor)
+        self.confidence_exponent = float(confidence_exponent)
+        if not 0.0 < self.confidence_floor <= 1.0:
+            raise ValueError("confidence_floor must be in (0, 1]")
+        if self.confidence_exponent < 0.0:
+            raise ValueError("confidence_exponent must be non-negative")
         dt2 = self.dt * self.dt
 
         # State: [x, y, vx, vy, ax, ay].
@@ -50,12 +65,24 @@ class KalmanTrajectory:
         self.state = self.F @ self.state
         self.P = self.F @ self.P @ self.F.T + self.Q
 
-    def update(self, x, y):
-        """Correct the motion state with a measured position."""
+    def update(self, x, y, confidence=None):
+        """Correct the motion state, optionally weighting detection confidence.
+
+        Confidence is treated as a reliability proxy, not a calibrated
+        localization variance. A lower score increases measurement noise so
+        the filter relies more on its predicted state.
+        """
+        measurement_covariance = self.R
+        if confidence is not None and self.confidence_exponent > 0.0:
+            score = float(np.clip(confidence, 0.0, 1.0))
+            score = max(score, self.confidence_floor)
+            scale = score ** (-self.confidence_exponent)
+            measurement_covariance = self.R * scale
+
         z = np.array([x, y], dtype=np.float32)
         residual = z - self.H @ self.state
         ph_t = self.P @ self.H.T
-        s = self.H @ ph_t + self.R
+        s = self.H @ ph_t + measurement_covariance
 
         # Solve the 2x2 innovation system instead of explicitly inverting it.
         k = np.linalg.solve(s, ph_t.T).T
@@ -63,7 +90,10 @@ class KalmanTrajectory:
 
         # Joseph form keeps covariance numerically stable during long streams.
         ikh = self._I - k @ self.H
-        self.P = ikh @ self.P @ ikh.T + k @ self.R @ k.T
+        self.P = (
+            ikh @ self.P @ ikh.T
+            + k @ measurement_covariance @ k.T
+        )
 
     def position(self):
         return float(self.state[0]), float(self.state[1])

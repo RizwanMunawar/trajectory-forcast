@@ -7,7 +7,14 @@ class TrackManager:
     """Stores a Kalman filter and a position history for every tracked object."""
 
     def __init__(
-        self, history_size, fps, process_noise, measurement_noise, max_gap_frames=5
+        self,
+        history_size,
+        fps,
+        process_noise,
+        measurement_noise,
+        max_gap_frames=5,
+        confidence_floor=0.1,
+        confidence_exponent=1.0,
     ):
         """Set up empty history and filter stores.
 
@@ -15,8 +22,10 @@ class TrackManager:
             history_size (int): Max number of past points kept per track.
             fps (float): Video frame rate, used as the filter time step.
             process_noise (float): Kalman process noise (motion flexibility).
-            measurement_noise (float): Kalman measurement noise (detection trust).
+            measurement_noise (float): Base Kalman measurement noise.
             max_gap_frames (int): Missing frames to retain a track's state.
+            confidence_floor (float): Minimum confidence used for noise scaling.
+            confidence_exponent (float): Strength of confidence-based scaling.
         """
         self.history = defaultdict(lambda: deque(maxlen=history_size))
         self.filters = {}
@@ -27,14 +36,17 @@ class TrackManager:
         if max_gap_frames < 0:
             raise ValueError("max_gap_frames must be non-negative")
         self.max_gap_frames = max_gap_frames
+        self.confidence_floor = confidence_floor
+        self.confidence_exponent = confidence_exponent
 
-    def update(self, track_id, cx, cy):
-        """Feed a new detection into the track's filter and store the result.
+    def update(self, track_id, cx, cy, confidence=None):
+        """Feed a detection into its filter and store the smoothed position.
 
         Args:
             track_id (int): Tracker id of the object.
             cx (float): Detected center x in pixels.
             cy (float): Detected center y in pixels.
+            confidence (float | None): Detection confidence in [0, 1].
 
         Returns:
             KalmanTrajectory: The track's filter, holding the smoothed state.
@@ -42,7 +54,13 @@ class TrackManager:
         kf = self.filters.get(track_id)
         if kf is None:
             kf = KalmanTrajectory(
-                cx, cy, self.dt, self.process_noise, self.measurement_noise
+                cx,
+                cy,
+                self.dt,
+                self.process_noise,
+                self.measurement_noise,
+                self.confidence_floor,
+                self.confidence_exponent,
             )
             self.filters[track_id] = kf
         else:
@@ -51,7 +69,7 @@ class TrackManager:
             # more behind after a short occlusion.
             for _ in range(self.missed[track_id] + 1):
                 kf.predict()
-            kf.update(cx, cy)
+            kf.update(cx, cy, confidence=confidence)
 
         self.missed[track_id] = 0
         self.history[track_id].append(kf.position())

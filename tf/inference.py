@@ -23,19 +23,18 @@ def run_inference(
 ):
     """Track objects in a video and forecast where they will move next.
 
-    Each object is tracked with YOLO, smoothed with an acceleration-aware Kalman
-    filter, and its future path is predicted from the filtered motion state.
-    Boxes, past tracks and forecasts are drawn on each frame, then shown and/or
-    saved to a video.
+    Each object is tracked with YOLO, smoothed with a confidence-aware,
+    acceleration-aware Kalman filter, and its future path is predicted from
+    the filtered motion state.
 
     Args:
         model_path (str): YOLO model file or Ultralytics model name.
         source (str): Path or URL to the input video (URLs are downloaded).
         output_path (str): Where to save the annotated output video.
         config (ForecastConfig | None): Settings; defaults are used if None.
-        show (bool): Display frames in a window.
+        show (bool): Display the processed video.
         save (bool): Write annotated frames to ``output_path``.
-        profile (bool): Print aggregate forecasting and track-ID diagnostics.
+        profile (bool): Print aggregate forecast and track-ID diagnostics.
 
     Example:
         >>> from tf.inference import run_inference
@@ -44,7 +43,7 @@ def run_inference(
     config = config or ForecastConfig()
 
     model = YOLO(model_path)
-    source = download_if_url(source)  # Download first if the source is a URL.
+    source = download_if_url(source)
 
     cap = cv2.VideoCapture(source)
     if not cap.isOpened():
@@ -53,8 +52,6 @@ def run_inference(
     fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    # Fill any unset drawing sizes based on the video resolution.
     config.resolve_visuals(width, height)
 
     if save:
@@ -68,6 +65,8 @@ def run_inference(
         config.process_noise,
         config.measurement_noise,
         config.max_gap_frames,
+        config.confidence_floor,
+        config.confidence_exponent,
     )
     draw = show or save
     diagnostics = ForecastDiagnostics() if profile else None
@@ -117,23 +116,21 @@ def run_inference(
         forecast_calls = 0
 
         if results.boxes is not None and results.boxes.id is not None:
-            # Boxes.data already contains xyxy, track ID, confidence and class.
-            # Transfer it once instead of synchronizing the device separately
-            # for xyxy, id and cls (three GPU->CPU copies per frame).
+            # One device-to-host transfer for boxes, IDs, confidence and classes.
             tracked = results.boxes.data.detach().cpu().numpy()
             boxes = tracked[:, :4]
             ids = tracked[:, 4].astype(np.int64, copy=False)
+            confidences = tracked[:, 5]
             clss = tracked[:, 6].astype(np.int64, copy=False)
 
-            for bbox, tid, cls in zip(boxes, ids, clss):
+            for bbox, tid, confidence, cls in zip(boxes, ids, confidences, clss):
                 # Preserve subpixel detector coordinates for motion estimation.
-                # Integer conversion is only needed for drawing the bounding box.
                 x1f, y1f, x2f, y2f = bbox
                 cx, cy = (x1f + x2f) / 2.0, (y1f + y2f) / 2.0
                 x1, y1, x2, y2 = map(int, bbox)
 
                 active_ids.add(tid)
-                kf = tracker_manager.update(tid, cx, cy)
+                kf = tracker_manager.update(tid, cx, cy, float(confidence))
 
                 if not draw:
                     continue
