@@ -135,6 +135,18 @@ The forecasting layer uses `float32` state arrays and vectorized future-point ge
 
 For fair comparisons, use the same video, model, device, tracker, output options, and warm-up conditions. Compare multiple runs and report median FPS alongside detection/forecast quality. Lowering `imgsz` or enabling `half` may improve throughput on supported hardware but can change detection results. The package does not claim a fixed speedup because performance depends on hardware and workload.
 
+## Benchmark the tracking and forecasting pipeline
+
+Run the reproducible synthetic microbenchmark from a source checkout:
+
+```bash
+python benchmarks/benchmark_pipeline.py --tracks 1 10 25 50 100 --frames 300 --warmup 30 --runs 5 --json benchmark-results.json
+```
+
+It reports median and p95 milliseconds per frame for Kalman track updates, future-point generation, and optional OpenCV drawing, with drawing-on and drawing-off scenarios. The synthetic workload uses deterministic trajectories and records the Python, platform, and NumPy versions. Adjust `--forecast-steps`, `--history`, `--width`, and `--height` to match a workload of interest.
+
+**Important:** this is a component microbenchmark, not an end-to-end FPS claim. It deliberately excludes YOLO inference, detector/tracker association, video decoding, and video encoding. Results are machine-dependent and should be compared on the same machine with the same arguments. For end-to-end measurements on real footage, use the CLI's `--profile` option and compare the same model, video, device, tracker, and output settings.
+
 ## Project structure
 
 ```text
