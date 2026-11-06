@@ -41,7 +41,7 @@ def _run_once(
     offsets = np.linspace(0.0, min(width, height) * 0.35, track_count)
     phase = np.linspace(0.0, 2.0 * np.pi, track_count, endpoint=False)
     frame = np.zeros((height, width, 3), dtype=np.uint8) if draw else None
-    timings = {"update": [], "forecast": [], "drawing": [], "total": []}
+    timings = {"update": [], "forecast": [], "drawing": [], "cleanup": [], "total": []}
 
     for frame_index in range(warmup + frames):
         active_ids = set(range(track_count))
@@ -57,7 +57,7 @@ def _run_once(
         forecast_started = time.perf_counter()
         forecasts = [
             kf.forecast(forecast_steps)
-            for kf in filters
+            for track_id, kf in enumerate(filters)
             if len(manager.history[track_id]) >= 2
         ]
         forecast_elapsed = time.perf_counter() - forecast_started
@@ -77,13 +77,16 @@ def _run_once(
                 )
         drawing_elapsed = time.perf_counter() - drawing_started
 
+        cleanup_started = time.perf_counter()
         manager.cleanup(active_ids)
+        cleanup_elapsed = time.perf_counter() - cleanup_started
         if frame_index >= warmup:
             timings["update"].append(update_elapsed)
             timings["forecast"].append(forecast_elapsed)
             timings["drawing"].append(drawing_elapsed)
+            timings["cleanup"].append(cleanup_elapsed)
             timings["total"].append(
-                update_elapsed + forecast_elapsed + drawing_elapsed
+                update_elapsed + forecast_elapsed + drawing_elapsed + cleanup_elapsed
             )
 
     return timings
@@ -120,7 +123,7 @@ def benchmark(args: argparse.Namespace) -> dict:
                 for _ in range(args.runs)
             ]
             stage_results = {}
-            for stage in ("update", "forecast", "drawing", "total"):
+            for stage in ("update", "forecast", "drawing", "cleanup", "total"):
                 combined = [sample for run in runs for sample in run[stage]]
                 stage_results[stage] = _summary(combined)
             results.append(
