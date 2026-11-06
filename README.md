@@ -64,6 +64,8 @@ Any Ultralytics-supported detection model can be used.
 | `--imgsz` | Override inference image size; smaller values may improve speed but reduce accuracy |
 | `--half` | Request half-precision inference where supported |
 | `--device` | Select inference device, e.g. `cpu`, `0`, or `mps`; default is automatic |
+| `--confidence_floor` | Minimum detection confidence used for Kalman noise scaling |
+| `--confidence_exponent` | Strength of confidence-based noise scaling; 0 disables it |
 
 ### Python
 
@@ -93,7 +95,9 @@ min_speed: 1.0                 # Skip forecasting for nearly stationary objects
 max_gap_frames: 5              # Keep motion state through short detection gaps
 
 process_noise: 1.0             # Higher values adapt faster to motion changes
-measurement_noise: 10.0        # Higher values smooth noisy detections more
+measurement_noise: 10.0        # Base measurement noise
+confidence_floor: 0.1          # Clamp low scores to avoid unbounded measurement noise
+confidence_exponent: 1.0       # 0 disables confidence-aware measurement noise
 
 # Optional inference performance controls (defaults preserve Ultralytics behavior)
 imgsz: 640                      # Inference image size; lower may be faster but less accurate
@@ -119,7 +123,8 @@ The most useful forecasting options are:
 - `min_speed`: skips forecasts for nearly stationary objects.
 - `max_gap_frames`: keeps motion state through short detection gaps.
 - `process_noise`: controls how quickly the motion estimate adapts.
-- `measurement_noise`: controls how strongly detection noise is smoothed.
+- `measurement_noise`: base measurement noise used by the Kalman filter.
+- `confidence_floor` and `confidence_exponent`: control how detection confidence scales measurement noise. Lower-confidence detections receive higher measurement noise, so the filter relies more on its motion prediction. Set the exponent to 0 to disable this behavior.
 
 ## How forecasting works
 
@@ -131,7 +136,7 @@ In every frame, the filter updates the object's position, velocity, and accelera
 
 Short detection gaps retain the motion state for up to `max_gap_frames`. If the tracker assigns a completely new ID, a new forecast state is created for that track.
 
-The forecasting layer uses `float32` state arrays and vectorized future-point generation. The inference loop also transfers the tracked box coordinates, IDs and classes to CPU in one batch per frame, avoiding multiple GPU synchronization points, and disables verbose per-frame Ultralytics output. Use `--profile` to report average per-frame time for video decoding, YOLO inference/tracking, forecasting and drawing, output writing, display, and total processing. Profiling is intended for measurement and adds a small amount of timing overhead.
+The forecasting layer uses `float32` state arrays and vectorized future-point generation. The inference loop transfers tracked box coordinates, IDs, confidence and classes to CPU in one batch per frame, avoiding multiple GPU synchronization points, and disables verbose per-frame Ultralytics output. Use `--profile` to report average per-frame time for video decoding, YOLO inference/tracking, forecasting and drawing, output writing, display, and total processing. Profiling is intended for measurement and adds a small amount of timing overhead.
 
 For fair comparisons, use the same video, model, device, tracker, output options, and warm-up conditions. Compare multiple runs and report median FPS alongside detection/forecast quality. Lowering `imgsz` or enabling `half` may improve throughput on supported hardware but can change detection results. The package does not claim a fixed speedup because performance depends on hardware and workload.
 
