@@ -130,9 +130,13 @@ The most useful forecasting options are:
 
 `YOLO detection → Object tracking → Motion history → Kalman forecasting → Future trajectory`
 
-Each tracked object has its own acceleration-aware Kalman motion state.
+Each tracked object has its own confidence-aware, acceleration-aware Kalman motion state. In every frame, the filter updates position, velocity, and acceleration from the latest tracked detection, then generates future points from that filtered state.
 
-In every frame, the filter updates the object's position, velocity, and acceleration based on the latest tracked position. Future points are then generated from that filtered motion state. This helps the forecast respond to changes in speed rather than assuming that every object will continue at a fixed velocity.
+The measurement covariance adapts to each matched detection confidence:
+
+`R_t = R_0 / max(confidence, confidence_floor)^confidence_exponent`
+
+A high-confidence detection stays close to the configured base measurement noise. A lower-confidence detection increases measurement noise, reducing the influence of a potentially imprecise position measurement. Set `confidence_exponent: 0` to restore fixed measurement noise. Detection confidence is a useful reliability signal, but it is not a calibrated estimate of bounding-box localization error; validate these settings on representative videos before relying on them in safety-critical applications.
 
 Short detection gaps retain the motion state for up to `max_gap_frames`. If the tracker assigns a completely new ID, a new forecast state is created for that track.
 
