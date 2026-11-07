@@ -32,6 +32,16 @@ def main():
     parser.add_argument("--process_noise", type=float)
     parser.add_argument("--measurement_noise", type=float)
     parser.add_argument(
+        "--confidence_floor",
+        type=float,
+        help="Minimum detection confidence used for Kalman noise scaling.",
+    )
+    parser.add_argument(
+        "--confidence_exponent",
+        type=float,
+        help="Strength of confidence-based measurement-noise scaling; 0 disables it.",
+    )
+    parser.add_argument(
         "--imgsz",
         type=int,
         help="Inference image size; smaller sizes can improve speed but may reduce accuracy.",
@@ -65,6 +75,14 @@ def main():
         config.process_noise = args.process_noise
     if args.measurement_noise is not None:
         config.measurement_noise = args.measurement_noise
+    if args.confidence_floor is not None:
+        config.confidence_floor = args.confidence_floor
+    if args.confidence_exponent is not None:
+        config.confidence_exponent = args.confidence_exponent
+    try:
+        config.__post_init__()
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.imgsz is not None:
         if args.imgsz <= 0:
             parser.error("--imgsz must be a positive integer")

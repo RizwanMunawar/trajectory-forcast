@@ -28,6 +28,8 @@ class ForecastConfig:
     process_noise: float = 1.0
     measurement_noise: float = 10.0
     max_gap_frames: int = 5
+    confidence_floor: float = 0.1
+    confidence_exponent: float = 1.0
 
     # Drawing (auto-scaled from resolution when left as None).
     forecast_color: Tuple[int, int, int] = (108, 27, 255)
@@ -39,9 +41,13 @@ class ForecastConfig:
     padding: Optional[int] = None
 
     def __post_init__(self):
-        """Apply the default class list when none is given."""
+        """Validate settings and apply the default class list."""
         if self.classes is None:
             self.classes = [0, 2, 5, 6, 7]
+        if not 0.0 < self.confidence_floor <= 1.0:
+            raise ValueError("confidence_floor must be in (0, 1]")
+        if self.confidence_exponent < 0.0:
+            raise ValueError("confidence_exponent must be non-negative")
 
     @classmethod
     def from_yaml(cls, path: str) -> "ForecastConfig":
